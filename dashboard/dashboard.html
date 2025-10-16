@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Glass Dashboard — Stack-style Portfolio</title>
+
+    <!-- Tailwind Play CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      // Optional: extend colors to better match the sample theme
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: '#0ea5a4',
+              accent: '#7c3aed',
+            },
+          },
+        },
+      }
+    </script>
+
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+    <!-- Google Font (similar modern sans used by many portfolios) -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+      }
+      /* small helpers for glass effect fallback */
+      .glass {
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(8px) saturate(120%);
+      }
+      .glass-strong {
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        backdrop-filter: blur(14px) saturate(120%);
+      }
+      .active-nav {
+        background: linear-gradient(90deg, rgba(124, 58, 237, 0.12), rgba(14, 165, 164, 0.06));
+        box-shadow: 0 6px 18px rgba(12, 12, 20, 0.25);
+      }
+    </style>
+  </head>
+  <body
+    class="min-h-screen bg-gradient-to-tr from-slate-900 via-slate-800 to-slate-900 text-slate-100"
+  >
+    <div class="flex h-screen">
+      <!-- SIDEBAR -->
+      <aside id="sidebar" class="w-72 p-6 glass flex flex-col gap-6">
+        <div class="flex items-center gap-3">
+          <img
+            src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=64&auto=format&fit=crop&ixlib=rb-4.0.3&s=placeholder"
+            alt="avatar"
+            class="w-12 h-12 rounded-full ring-1 ring-white/10 object-cover"
+          />
+          <div>
+            <h3 class="text-white font-semibold">Your Name</h3>
+            <p class="text-xs text-slate-300">Frontend • MERN • UI</p>
+          </div>
+        </div>
+
+        <nav class="flex-1">
+          <ul id="navList" class="space-y-2">
+            <li>
+              <button
+                data-page="home"
+                class="nav-btn w-full text-left flex items-center gap-3 px-3 py-2 rounded-md"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="1.5"
+                    d="M3 12l9-9 9 9v8a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2v-5H9v5a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-8z"
+                  />
+                </svg>
+                <span>Home</span>
+              </button>
+            </li>
+            <li>
+              <button
+                data-page="about"
+                class="nav-btn w-full text-left flex items-center gap-3 px-3 py-2 rounded-md"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="1.5"
+                    d="M12 11c2.21 0 4-1.79 4-4S14.21 3 12 3 8 4.79 8 7s1.79 4 4 4zM6 20v-1a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v1"
+                  />
+                </svg>
+                <span>About</span>
+              </button>
+            </li>
+            <li>
+              <button
+                data-page="projects"
+                class="nav-btn w-full text-left flex items-center gap-3 px-3 py-2 rounded-md"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="1.5"
+                    d="M3 7h18M3 12h18M3 17h18"
+                  />
+                </svg>
+                <span>Projects</span>
+              </button>
+            </li>
+            <li>
+              <button
+                data-page="blog"
+                class="nav-btn w-full text-left flex items-center gap-3 px-3 py-2 rounded-md"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="1.5"
+                    d="M19 11H5m7-7v14"
+                  />
+                </svg>
+                <span>Blog</span>
+              </button>
+            </li>
+            <li>
+              <button
+                data-page="contact"
+                class="nav-btn w-full text-left flex items-center gap-3 px-3 py-2 rounded-md"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="1.5"
+                    d="M21 10a8 8 0 11-16 0 8 8 0 0116 0zM12 14v.01"
+                  />
+                </svg>
+                <span>Contact</span>
+              </button>
+            </li>
+          </ul>
+        </nav>
+
+        <div class="mt-auto">
+          <div class="text-xs text-slate-400 mb-3">Account</div>
+          <div class="flex items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 rounded-full glass flex items-center justify-center text-xs">
+                JD
+              </div>
+              <div class="text-sm">
+                <div class="font-medium">John Doe</div>
+                <div class="text-xs text-slate-400">Pro Member</div>
+              </div>
+            </div>
+            <button id="themeBtn" class="p-2 rounded-md glass-strong" title="Theme">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="1.5"
+                  d="M12 3v1M12 20v1M4.2 4.2l.7.7M18.1 18.1l.7.7M1 12h1M22 12h1M4.2 19.8l.7-.7M18.1 5.9l.7-.7"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      <!-- MAIN CONTENT -->
+      <main class="flex-1 p-8 overflow-auto">
+        <header class="flex items-center justify-between mb-6">
+          <div>
+            <h1 class="text-2xl font-semibold">Dashboard</h1>
+            <p class="text-sm text-slate-400">
+              Glassmorphic control panel — matches Stack portfolio theme
+            </p>
+          </div>
+          <div class="flex items-center gap-4">
+            <input
+              id="search"
+              type="search"
+              placeholder="Search pages or projects..."
+              class="px-3 py-2 rounded-md bg-white/3 placeholder:text-slate-300 focus:outline-none focus:ring-2 focus:ring-accent"
+            />
+            <button id="newBtn" class="px-3 py-2 rounded-md glass-strong">New Project</button>
+          </div>
+        </header>
+
+        <section id="pagesContainer" class="space-y-6">
+          <!-- HOME -->
+          <article data-page="home" class="page glass-strong p-6 rounded-2xl">
+            <div class="flex items-center justify-between">
+              <div>
+                <h2 class="text-xl font-semibold">Welcome back 👋</h2>
+                <p class="text-sm text-slate-300">Quick overview of your profile and activity.</p>
+              </div>
+              <div class="text-right">
+                <div class="text-xs text-slate-400">Last login</div>
+                <div class="font-medium">Oct 13, 2025</div>
+              </div>
+            </div>
+
+            <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div class="p-4 glass rounded-lg">
+                <div class="text-sm text-slate-400">Projects</div>
+                <div class="text-2xl font-semibold">12</div>
+              </div>
+              <div class="p-4 glass rounded-lg">
+                <div class="text-sm text-slate-400">Active Clients</div>
+                <div class="text-2xl font-semibold">6</div>
+              </div>
+              <div class="p-4 glass rounded-lg">
+                <div class="text-sm text-slate-400">Earnings (mo)</div>
+                <div class="text-2xl font-semibold">$2,100</div>
+              </div>
+            </div>
+          </article>
+
+          <!-- ABOUT -->
+          <article data-page="about" class="page glass-strong p-6 rounded-2xl hidden">
+            <h2 class="text-xl font-semibold">About</h2>
+            <p class="text-slate-300 mt-2">
+              Short bio, skills, and highlights. This area mirrors the portfolio's About page but in
+              admin view.
+            </p>
+
+            <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div class="p-4 glass rounded-lg">
+                <div class="text-sm text-slate-400">Skills</div>
+                <div class="mt-2">
+                  <span class="inline-block px-2 py-1 text-xs rounded-full glass mr-2">React</span>
+                  <span class="inline-block px-2 py-1 text-xs rounded-full glass mr-2"
+                    >Tailwind</span
+                  >
+                  <span class="inline-block px-2 py-1 text-xs rounded-full glass">GSAP</span>
+                </div>
+              </div>
+              <div class="p-4 glass rounded-lg">
+                <div class="text-sm text-slate-400">Experience</div>
+                <div class="mt-2 text-sm text-slate-200">
+                  Freelance & small teams — building fast, smooth frontends.
+                </div>
+              </div>
+              <div class="p-4 glass rounded-lg">
+                <div class="text-sm text-slate-400">Availability</div>
+                <div class="mt-2 font-medium">Open for projects</div>
+              </div>
+            </div>
+          </article>
+
+          <!-- PROJECTS -->
+          <article data-page="projects" class="page glass-strong p-6 rounded-2xl hidden">
+            <div class="flex items-center justify-between">
+              <h2 class="text-xl font-semibold">Projects</h2>
+              <button class="px-3 py-2 rounded-md glass-strong">Create</button>
+            </div>
+
+            <div class="mt-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+              <!-- sample project card -->
+              <div class="p-4 glass rounded-lg">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <div class="text-sm text-slate-400">Portfolio UI</div>
+                    <div class="font-medium">Stack Astro Replica</div>
+                  </div>
+                  <div class="text-xs text-slate-400">In progress</div>
+                </div>
+                <div class="mt-4">
+                  <p class="text-sm text-slate-300">
+                    Recreating the hero, glass panels and animations using Tailwind + GSAP.
+                  </p>
+                </div>
+              </div>
+
+              <div class="p-4 glass rounded-lg">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <div class="text-sm text-slate-400">E-commerce</div>
+                    <div class="font-medium">Shopo Revamp</div>
+                  </div>
+                  <div class="text-xs text-slate-400">Done</div>
+                </div>
+                <div class="mt-4 text-sm text-slate-300">
+                  Performance optimized, animations tuned for mobile.
+                </div>
+              </div>
+
+              <div class="p-4 glass rounded-lg">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <div class="text-sm text-slate-400">Dashboard</div>
+                    <div class="font-medium">Admin Panel</div>
+                  </div>
+                  <div class="text-xs text-slate-400">Staging</div>
+                </div>
+                <div class="mt-4 text-sm text-slate-300">React + Tailwind + GSAP interactions.</div>
+              </div>
+            </div>
+          </article>
+
+          <!-- BLOG -->
+          <article data-page="blog" class="page glass-strong p-6 rounded-2xl hidden">
+            <h2 class="text-xl font-semibold">Blog</h2>
+            <p class="text-slate-300 mt-2">List of posts and quick editor actions.</p>
+
+            <div class="mt-6 space-y-3">
+              <div class="p-4 glass rounded-lg flex items-start gap-4">
+                <div class="w-12 h-12 rounded-md glass flex items-center justify-center text-sm">
+                  JS
+                </div>
+                <div>
+                  <div class="font-medium">How to build smooth scroll</div>
+                  <div class="text-xs text-slate-400">Sep 26, 2025 • 5 min read</div>
+                </div>
+              </div>
+              <div class="p-4 glass rounded-lg flex items-start gap-4">
+                <div class="w-12 h-12 rounded-md glass flex items-center justify-center text-sm">
+                  UI
+                </div>
+                <div>
+                  <div class="font-medium">Glassmorphism in modern UIs</div>
+                  <div class="text-xs text-slate-400">Aug 12, 2025 • 3 min read</div>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- CONTACT -->
+          <article data-page="contact" class="page glass-strong p-6 rounded-2xl hidden">
+            <h2 class="text-xl font-semibold">Contact</h2>
+            <p class="text-slate-300 mt-2">Quick contact form and socials.</p>
+
+            <form class="mt-4 grid grid-cols-1 gap-3 max-w-xl">
+              <input type="text" placeholder="Full name" class="px-3 py-2 rounded-md bg-white/3" />
+              <input type="email" placeholder="Email" class="px-3 py-2 rounded-md bg-white/3" />
+              <textarea
+                placeholder="Message"
+                rows="4"
+                class="px-3 py-2 rounded-md bg-white/3"
+              ></textarea>
+              <div>
+                <button type="submit" class="px-4 py-2 rounded-md glass-strong">
+                  Send message
+                </button>
+              </div>
+            </form>
+          </article>
+        </section>
+      </main>
+    </div>
+
+    <script>
+      // Basic SPA-like page switching + active nav state + GSAP animations
+      const navButtons = document.querySelectorAll('.nav-btn')
+      const pages = document.querySelectorAll('.page')
+
+      function setActive(pageName, push = true) {
+        // update nav active state
+        navButtons.forEach(btn => {
+          if (btn.dataset.page === pageName) {
+            btn.classList.add('active-nav')
+            btn.querySelector('span').classList.add('text-white')
+          } else {
+            btn.classList.remove('active-nav')
+            btn.querySelector('span').classList.remove('text-white')
+          }
+        })
+
+        // show/hide pages
+        pages.forEach(p => {
+          if (p.dataset.page === pageName) {
+            p.classList.remove('hidden')
+            gsap.fromTo(
+              p,
+              { opacity: 0, y: 10 },
+              { opacity: 1, y: 0, duration: 0.45, ease: 'power2.out' }
+            )
+          } else {
+            if (!p.classList.contains('hidden')) {
+              gsap.to(p, {
+                opacity: 0,
+                y: 6,
+                duration: 0.28,
+                ease: 'power1.in',
+                onComplete: () => p.classList.add('hidden'),
+              })
+            } else {
+              p.classList.add('hidden')
+            }
+          }
+        })
+
+        if (push) {
+          history.pushState({ page: pageName }, '', `#${pageName}`)
+        }
+      }
+
+      navButtons.forEach(btn => {
+        btn.addEventListener('click', () => setActive(btn.dataset.page))
+      })
+
+      // handle back/forward browser buttons
+      window.addEventListener('popstate', e => {
+        const page = e.state?.page || location.hash.replace('#', '') || 'home'
+        setActive(page, false)
+      })
+
+      // initial activation (respect URL hash)
+      const initial = location.hash.replace('#', '') || 'home'
+      // small delay to let layout render then animate sidebar + entry
+      window.addEventListener('load', () => {
+        gsap.from('#sidebar', { x: -20, opacity: 0, duration: 0.6, ease: 'power2.out' })
+        setTimeout(() => setActive(initial, false), 120)
+      })
+
+      // optional small micro-interactions
+      document.getElementById('newBtn').addEventListener('click', () => {
+        gsap.fromTo(
+          '#projects',
+          { scale: 0.98, opacity: 0 },
+          { scale: 1, opacity: 1, duration: 0.4 }
+        )
+        alert('Create project action (placeholder)')
+      })
+
+      // theme toggle (light/dark sample)
+      const themeBtn = document.getElementById('themeBtn')
+      let dark = true
+      themeBtn.addEventListener('click', () => {
+        dark = !dark
+        if (!dark) {
+          document.documentElement.style.setProperty(
+            '--bg',
+            'linear-gradient(to-tr, #f8fafc, #eef2ff)'
+          )
+          document.body.classList.remove(
+            'bg-gradient-to-tr',
+            'from-slate-900',
+            'via-slate-800',
+            'to-slate-900'
+          )
+          document.body.classList.add('bg-white', 'text-slate-900')
+          themeBtn.classList.add('ring-2', 'ring-accent')
+        } else {
+          document.body.classList.add(
+            'bg-gradient-to-tr',
+            'from-slate-900',
+            'via-slate-800',
+            'to-slate-900'
+          )
+          document.body.classList.remove('bg-white', 'text-slate-900')
+          themeBtn.classList.remove('ring-2', 'ring-accent')
+        }
+      })
+    </script>
+  </body>
+</html>

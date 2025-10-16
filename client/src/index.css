@@ -1,0 +1,77 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-theme-purple: #9235ea;
+  --color-theme-cyan: #06b6d4;
+  --color-light-blue: #5161cf;
+  --color-theme-dark: #0f0921;
+  --font-fira-code: 'Fira Code', monospace;
+  --font-inter: 'Inter', sans-serif;
+  --breakpoint-xs: 300px;
+}
+
+.gradient-text {
+  background: linear-gradient(to right, #9235ea, #5161cf, #06b6d4); /* Gradient colors */
+  -webkit-background-clip: text; /* Safari, Chrome */
+  -webkit-text-fill-color: transparent; /* Safari, Chrome */
+  background-clip: text; /* Firefox */
+  color: transparent;
+}
+
+.gradient-button {
+  background: linear-gradient(to right, #9235ea, #5161cf, #06b6d4);
+}
+.gradient-button-shadow:hover {
+  box-shadow: 0 0 20px #06b5d4cd;
+  margin-bottom: 2px;
+  margin-top: -2px;
+}
+
+.bg-circut {
+  background-image: url('/imgs/bg-circuit.png');
+  background-position: center center;
+}
+.purple-shadow-circle {
+  box-shadow: 0 0 40px 20px rgba(147, 53, 234, 0.171), 0 0 100px 40px rgba(147, 53, 234, 0.098),
+    0 0 250px 90px rgba(147, 53, 234, 0.057), 0 0 180px 60px rgba(147, 53, 234, 0.016);
+}
+
+.half-cirle-left {
+  border-radius: 50% 0% 0% 50%;
+}
+.half-cirle-right {
+  border-radius: 0% 50% 50% 0%;
+}
+
+.badge:hover .black-circle {
+  box-shadow: 0 0 10px #06b6d4, 0 0 20px #06b6d4, 0 0 30px #06b6d4;
+}
+
+.badge:hover {
+  margin-top: -2px;
+  margin-bottom: 2px;
+}
+.exp-cards:hover {
+  box-shadow: 0 0 10px #06b5d46c, 0 0 20px #06b5d463, 0 0 30px #06b5d442;
+  margin-top: -2px;
+  margin-bottom: 2px;
+}
+
+.code-block {
+  box-shadow: 0 0 10px #06b5d46c, 0 0 20px #06b5d41f;
+}
+
+.list-tick li::before {
+  content: '\2713';
+  color: #06b6d4;
+  font-weight: 900;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+.text-hover:hover {
+  text-shadow: 0 0 10px #06b6d4, 0 0 20px #06b6d4, 0 0 30px #06b6d4;
+  margin-top: -2px;
+  margin-bottom: 2px;
+  color: #06b6d4;
+}
