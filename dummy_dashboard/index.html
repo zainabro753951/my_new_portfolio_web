@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Portfolio Admin — Glassmorphic Dark Blue Dashboard (HTML + Tailwind)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      /* Glassmorphic dark-blue theme tweaks */
+      :root {
+        --bg-1: #0b1220; /* deep navy */
+        --bg-2: rgba(10, 20, 40, 0.6);
+        --glass: rgba(255, 255, 255, 0.04);
+        --accent: linear-gradient(90deg, #56ccf2, #2f80ed);
+        --muted: rgba(255, 255, 255, 0.6);
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        background: radial-gradient(1200px 600px at 10% 10%, rgba(47, 128, 237, 0.08), transparent),
+          radial-gradient(800px 400px at 90% 90%, rgba(86, 204, 242, 0.04), transparent),
+          var(--bg-1);
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
+          'Helvetica Neue', Arial;
+      }
+      /* glass card */
+      .glass {
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.02));
+        backdrop-filter: blur(8px) saturate(120%);
+        -webkit-backdrop-filter: blur(8px) saturate(120%);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+      }
+      .glass-strong {
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
+        backdrop-filter: blur(12px) saturate(120%);
+        -webkit-backdrop-filter: blur(12px) saturate(120%);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+      }
+      .accent-border {
+        box-shadow: 0 0 30px rgba(47, 128, 237, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.02);
+      }
+      .neon {
+        background: linear-gradient(90deg, #3aa0ff, #5c7cff);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+      /* tiny utilities */
+      .muted {
+        color: var(--muted);
+      }
+      .card-hover:hover {
+        transform: translateY(-6px);
+        transition: all 0.18s ease;
+      }
+      /* responsive content height */
+      .content-area {
+        height: calc(100vh - 4.25rem);
+        overflow: auto;
+        padding: 1rem;
+      }
+      /* nice scrollbars */
+      ::-webkit-scrollbar {
+        height: 10px;
+        width: 8px;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.06);
+        border-radius: 10px;
+      }
+    </style>
+  </head>
+  <body class="text-white">
+    <div class="min-h-screen flex">
+      <!-- SIDEBAR -->
+      <aside class="w-72 hidden md:flex flex-col p-4 gap-4 glass-strong accent-border">
+        <div class="flex items-center gap-3">
+          <div
+            class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-400 to-indigo-600 flex items-center justify-center shadow-md"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="w-7 h-7 text-white"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="1.5"
+                d="M12 11c0 1.657-1.343 3-3 3S6 12.657 6 11s1.343-3 3-3 3 1.343 3 3z"
+              />
+            </svg>
+          </div>
+          <div>
+            <div class="text-lg font-semibold">Zain Abro</div>
+            <div class="text-xs muted">Portfolio Admin</div>
+          </div>
+        </div>
+
+        <nav class="flex-1 overflow-auto">
+          <ul class="space-y-1 text-sm">
+            <li>
+              <button
+                data-section="overview"
+                class="nav-item w-full text-left px-3 py-2 rounded-lg hover:bg-white/3 transition"
+              >
+                Overview
+              </button>
+            </li>
+            <li>
+              <button
+                data-section="projects-list"
+                class="nav-item w-full text-left px-3 py-2 rounded-lg hover:bg-white/3 transition"
+              >
+                Projects
+              </button>
+            </li>
+            <li>
+              <button
+                data-section="projects-add"
+                class="nav-item w-full text-left px-3 py-2 rounded-lg hover:bg-white/3 transition"
+              >
+                Add Project
+              </button>
+            </li>
+            <li>
+              <button
+                data-section="about"
+                class="nav-item w-full text-left px-3 py-2 rounded-lg hover:bg-white/3 transition"
+              >
+                About
+              </button>
+            </li>
+            <li>
+              <button
+                data-section="skills"
+                class="nav-item w-full text-left px-3 py-2 rounded-lg hover:bg-white/3 transition"
+              >
+                Skills
+              </button>
+            </li>
+            <li>
+              <button
+                data-section="education"
+                class="nav-item w-full text-left px-3 py-2 rounded-lg hover:bg-white/3 transition"
+              >
+                Education
+              </button>
+            </li>
+            <li>
+              <button
+                data-section="testimonials"
+                class="nav-item w-full text-left px-3 py-2 rounded-lg hover:bg-white/3 transition"
+              >
+                Testimonials
+              </button>
+            </li>
+            <li>
+              <button
+                data-section="pricing"
+                class="nav-item w-full text-left px-3 py-2 rounded-lg hover:bg-white/3 transition"
+              >
+                Pricing Plans
+              </button>
+            </li>
+            <li>
+              <button
+                data-section="media"
+                class="nav-item w-full text-left px-3 py-2 rounded-lg hover:bg-white/3 transition"
+              >
+                Media Manager
+              </button>
+            </li>
+            <li>
+              <button
+                data-section="users"
+                class="nav-item w-full text-left px-3 py-2 rounded-lg hover:bg-white/3 transition"
+              >
+                Users & Roles
+              </button>
+            </li>
+            <li>
+              <button
+                data-section="settings"
+                class="nav-item w-full text-left px-3 py-2 rounded-lg hover:bg-white/3 transition"
+              >
+                Site Settings
+              </button>
+            </li>
+            <li>
+              <button
+                data-section="analytics"
+                class="nav-item w-full text-left px-3 py-2 rounded-lg hover:bg-white/3 transition"
+              >
+                Analytics
+              </button>
+            </li>
+            <li>
+              <button
+                data-section="help"
+                class="nav-item w-full text-left px-3 py-2 rounded-lg hover:bg-white/3 transition"
+              >
+                Help / Docs
+              </button>
+            </li>
+          </ul>
+        </nav>
+
+        <div class="text-xs muted">
+          <div>Logged in as <strong>Zain</strong></div>
+          <div class="mt-2 flex gap-2">
+            <button class="px-2 py-1 bg-white/6 rounded">Settings</button>
+            <button class="px-2 py-1 bg-red-600/20 rounded">Logout</button>
+          </div>
+        </div>
+      </aside>
+
+      <!-- MAIN -->
+      <div class="flex-1 flex flex-col">
+        <!-- Topbar -->
+        <header class="h-16 flex items-center justify-between px-4 glass shadow-sm">
+          <div class="flex items-center gap-4">
+            <button id="mobileMenuBtn" class="md:hidden p-2 rounded bg-white/5">☰</button>
+            <div>
+              <h1 class="text-xl font-semibold neon">Portfolio Dashboard</h1>
+              <div class="text-xs muted">Manage content — projects, about, skills & more</div>
+            </div>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="relative">
+              <input
+                placeholder="Search projects, pages..."
+                class="bg-white/3 rounded-full px-3 py-2 text-sm w-64 placeholder:muted"
+              />
+            </div>
+            <button
+              class="px-3 py-2 rounded-full bg-gradient-to-r from-blue-400 to-indigo-500 text-xs font-medium"
+            >
+              New Project
+            </button>
+            <img
+              src="https://i.pravatar.cc/40?img=5"
+              class="w-9 h-9 rounded-full border-2 border-white/6"
+              alt="avatar"
+            />
+          </div>
+        </header>
+
+        <!-- Content -->
+        <main class="content-area px-6 py-5">
+          <!-- Overview -->
+          <section id="overview" class="page">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div class="glass p-5 rounded-xl card-hover">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <div class="text-sm muted">Total Projects</div>
+                    <div class="text-2xl font-bold">18</div>
+                  </div>
+                  <div class="p-3 rounded-lg bg-white/5">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="w-6 h-6 text-white/80"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-width="1.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M3 7h18M3 12h18M3 17h18"
+                      />
+                    </svg>
+                  </div>
+                </div>
+                <div class="mt-3 text-xs muted">9 Published • 9 Drafts</div>
+              </div>
+
+              <div class="glass p-5 rounded-xl card-hover">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <div class="text-sm muted">Site Visitors (30d)</div>
+                    <div class="text-2xl font-bold">4.2k</div>
+                  </div>
+                  <div class="p-3 rounded-lg bg-white/5">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="w-6 h-6 text-white/80"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-width="1.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M12 4v16m8-8H4"
+                      />
+                    </svg>
+                  </div>
+                </div>
+                <div class="mt-3 text-xs muted">Top page: /projects/e-commerce-ui</div>
+              </div>
+
+              <div class="glass p-5 rounded-xl card-hover">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <div class="text-sm muted">Media Files</div>
+                    <div class="text-2xl font-bold">128</div>
+                  </div>
+                  <div class="p-3 rounded-lg bg-white/5">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="w-6 h-6 text-white/80"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-width="1.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V7"
+                      />
+                    </svg>
+                  </div>
+                </div>
+                <div class="mt-3 text-xs muted">Storage used: 860MB</div>
+              </div>
+            </div>
+
+            <div class="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div class="glass p-5 rounded-xl">
+                <h3 class="font-semibold">Recent Activity</h3>
+                <ul class="mt-3 text-sm muted space-y-2">
+                  <li>Project <strong>Shopo</strong> published — 2 days ago</li>
+                  <li>Added testimonial by <strong>Sara</strong> — 4 days ago</li>
+                  <li>Media cleanup — 1 week ago</li>
+                </ul>
+              </div>
+              <div class="glass p-5 rounded-xl">
+                <h3 class="font-semibold">Drafts</h3>
+                <ul class="mt-3 text-sm muted space-y-2">
+                  <li>Landing page redesign</li>
+                  <li>Blog: Optimizing GSAP animations</li>
+                </ul>
+              </div>
+            </div>
+          </section>
+
+          <!-- Projects List -->
+          <section id="projects-list" class="page hidden">
+            <div class="flex items-center justify-between mb-4">
+              <div>
+                <h2 class="text-xl font-semibold">Projects</h2>
+                <div class="text-sm muted">Manage all project entries</div>
+              </div>
+              <div class="flex items-center gap-3">
+                <select class="bg-white/4 rounded px-3 py-2 text-sm">
+                  <option>All</option>
+                  <option>Published</option>
+                  <option>Draft</option>
+                </select>
+                <button
+                  data-section="projects-add"
+                  class="px-4 py-2 rounded bg-gradient-to-r from-blue-500 to-indigo-600"
+                >
+                  Add Project
+                </button>
+              </div>
+            </div>
+
+            <div class="glass rounded-xl overflow-hidden">
+              <table class="min-w-full text-sm">
+                <thead class="bg-white/3 text-left">
+                  <tr>
+                    <th class="px-4 py-3">Title</th>
+                    <th class="px-4 py-3">Tags</th>
+                    <th class="px-4 py-3">Tech</th>
+                    <th class="px-4 py-3">Status</th>
+                    <th class="px-4 py-3">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="border-b border-white/6 hover:bg-white/3">
+                    <td class="px-4 py-3">E-Commerce UI</td>
+                    <td class="px-4 py-3">ecommerce, ui</td>
+                    <td class="px-4 py-3">React, Tailwind</td>
+                    <td class="px-4 py-3">Published</td>
+                    <td class="px-4 py-3">
+                      <button class="px-3 py-1 rounded bg-white/6 mr-2">Edit</button>
+                      <button class="px-3 py-1 rounded bg-red-600/20">Delete</button>
+                    </td>
+                  </tr>
+                  <!-- more rows... -->
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <!-- Add / Edit Project -->
+          <section id="projects-add" class="page hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div class="lg:col-span-2 glass p-5 rounded-xl">
+                <h2 class="text-lg font-semibold">Add / Edit Project</h2>
+                <form id="projectForm" class="mt-4 space-y-4">
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <input placeholder="Title" class="w-full bg-white/4 rounded px-3 py-2" />
+                    <input placeholder="Slug (auto)" class="w-full bg-white/4 rounded px-3 py-2" />
+                  </div>
+                  <input
+                    placeholder="Short description"
+                    class="w-full bg-white/4 rounded px-3 py-2"
+                  />
+                  <textarea
+                    placeholder="Full description (HTML)"
+                    rows="6"
+                    class="w-full bg-white/4 rounded px-3 py-2"
+                  ></textarea>
+
+                  <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <div>
+                      <label class="text-sm muted">Cover image</label>
+                      <input type="file" id="coverImage" class="w-full text-sm mt-1" />
+                      <img
+                        id="coverPreview"
+                        src=""
+                        class="mt-2 rounded max-h-36 object-cover hidden"
+                      />
+                    </div>
+                    <div>
+                      <label class="text-sm muted">Tech stack (comma)</label>
+                      <input class="w-full bg-white/4 rounded px-3 py-2" />
+                    </div>
+                    <div>
+                      <label class="text-sm muted">Tags (comma)</label>
+                      <input class="w-full bg-white/4 rounded px-3 py-2" />
+                    </div>
+                  </div>
+
+                  <div class="flex items-center gap-3">
+                    <label class="flex items-center gap-2"
+                      ><input type="checkbox" class="scale-90" />
+                      <span class="text-sm muted">Featured</span></label
+                    >
+                    <label class="flex items-center gap-2"
+                      ><input type="checkbox" class="scale-90" />
+                      <span class="text-sm muted">Published</span></label
+                    >
+                  </div>
+
+                  <div class="flex gap-3">
+                    <button class="px-5 py-2 rounded bg-gradient-to-r from-blue-500 to-indigo-600">
+                      Save
+                    </button>
+                    <button class="px-5 py-2 rounded bg-white/6">Save as Draft</button>
+                  </div>
+                </form>
+              </div>
+
+              <aside class="glass p-5 rounded-xl">
+                <h4 class="font-semibold">SEO & Preview</h4>
+                <input placeholder="Meta title" class="w-full bg-white/4 rounded px-3 py-2 mt-2" />
+                <input
+                  placeholder="Meta description"
+                  class="w-full bg-white/4 rounded px-3 py-2 mt-2"
+                />
+                <button class="mt-3 w-full px-3 py-2 rounded bg-white/6">Live preview</button>
+              </aside>
+            </div>
+          </section>
+
+          <!-- About -->
+          <section id="about" class="page hidden">
+            <div class="glass p-5 rounded-xl">
+              <h2 class="text-lg font-semibold">About / Profile</h2>
+              <form class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="flex flex-col items-center">
+                  <div
+                    class="w-28 h-28 rounded-full bg-white/6 flex items-center justify-center overflow-hidden"
+                  >
+                    <img
+                      id="profilePreview"
+                      src="https://i.pravatar.cc/120"
+                      class="w-full h-full object-cover"
+                    />
+                  </div>
+                  <input type="file" id="profilePhoto" class="mt-3 text-sm" />
+                </div>
+                <div class="md:col-span-2 space-y-2">
+                  <input placeholder="Full name" class="w-full bg-white/4 rounded px-3 py-2" />
+                  <input placeholder="Title / Role" class="w-full bg-white/4 rounded px-3 py-2" />
+                  <textarea
+                    placeholder="Short bio"
+                    rows="4"
+                    class="w-full bg-white/4 rounded px-3 py-2"
+                  ></textarea>
+                  <input placeholder="CV (PDF) URL" class="w-full bg-white/4 rounded px-3 py-2" />
+                  <div class="flex gap-2">
+                    <button class="px-3 py-2 rounded bg-gradient-to-r from-blue-500 to-indigo-600">
+                      Save
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </section>
+
+          <!-- Skills -->
+          <section id="skills" class="page hidden">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div class="glass p-5 rounded-xl">
+                <h3 class="font-semibold">All Skills</h3>
+                <ul class="mt-3 space-y-2 text-sm muted">
+                  <li class="flex justify-between">React <span class="text-xs">Advanced</span></li>
+                  <li class="flex justify-between">
+                    Node.js <span class="text-xs">Intermediate</span>
+                  </li>
+                </ul>
+              </div>
+              <div class="md:col-span-2 glass p-5 rounded-xl">
+                <h3 class="font-semibold">Add Skill</h3>
+                <div class="mt-3 grid grid-cols-1 md:grid-cols-3 gap-3">
+                  <input placeholder="Skill name" class="bg-white/4 rounded px-3 py-2" />
+                  <select class="bg-white/4 rounded px-3 py-2">
+                    <option>Beginner</option>
+                    <option>Intermediate</option>
+                    <option>Advanced</option>
+                  </select>
+                  <button class="px-3 py-2 rounded bg-gradient-to-r from-blue-500 to-indigo-600">
+                    Save Skill
+                  </button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Education -->
+          <section id="education" class="page hidden">
+            <div class="glass p-5 rounded-xl">
+              <h3 class="font-semibold">Education</h3>
+              <div class="mt-3">
+                <div class="flex justify-between items-center">
+                  <div>
+                    <div class="font-medium">Sindh Agricultural University</div>
+                    <div class="text-sm muted">BSc - Computer Science (2018 - 2022)</div>
+                  </div>
+                  <div class="flex gap-2">
+                    <button class="px-2 py-1 bg-white/6 rounded">Edit</button>
+                  </div>
+                </div>
+                <form class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <input placeholder="Institute" class="bg-white/4 rounded px-3 py-2" />
+                  <input placeholder="Degree" class="bg-white/4 rounded px-3 py-2" />
+                  <input placeholder="Start - End" class="bg-white/4 rounded px-3 py-2" />
+                  <input placeholder="Certificate URL" class="bg-white/4 rounded px-3 py-2" />
+                  <div class="md:col-span-2">
+                    <button class="px-3 py-2 rounded bg-gradient-to-r from-blue-500 to-indigo-600">
+                      Add Education
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </section>
+
+          <!-- Testimonials -->
+          <section id="testimonials" class="page hidden">
+            <div class="glass p-5 rounded-xl">
+              <h3 class="font-semibold">Testimonials</h3>
+              <form class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3">
+                <input placeholder="Name" class="bg-white/4 rounded px-3 py-2" />
+                <input placeholder="Role / Company" class="bg-white/4 rounded px-3 py-2" />
+                <textarea
+                  placeholder="Quote"
+                  class="bg-white/4 rounded px-3 py-2 md:col-span-2"
+                ></textarea>
+                <div class="md:col-span-2 flex gap-2">
+                  <button class="px-3 py-2 rounded bg-gradient-to-r from-blue-500 to-indigo-600">
+                    Save
+                  </button>
+                </div>
+              </form>
+            </div>
+          </section>
+
+          <!-- Pricing Plans -->
+          <section id="pricing" class="page hidden">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="glass p-5 rounded-xl">
+                <h3 class="font-semibold">Plans</h3>
+                <ul class="mt-3 space-y-2 muted text-sm">
+                  <li class="flex justify-between">Free <span>—</span></li>
+                  <li class="flex justify-between">Pro <span>$9/mo</span></li>
+                </ul>
+              </div>
+              <div class="glass p-5 rounded-xl">
+                <h3 class="font-semibold">Add Plan</h3>
+                <input placeholder="Plan name" class="bg-white/4 rounded px-3 py-2 mt-2" />
+                <input placeholder="Price" class="bg-white/4 rounded px-3 py-2 mt-2" />
+                <textarea
+                  placeholder="Features (one per line)"
+                  class="bg-white/4 rounded px-3 py-2 mt-2"
+                ></textarea>
+                <button class="mt-3 px-3 py-2 rounded bg-gradient-to-r from-blue-500 to-indigo-600">
+                  Save Plan
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <!-- Media Manager -->
+          <section id="media" class="page hidden">
+            <div class="glass p-5 rounded-xl">
+              <h3 class="font-semibold">Media Manager</h3>
+              <div class="mt-3 flex items-center gap-3">
+                <input type="file" id="mediaUpload" multiple class="text-sm" />
+                <button
+                  id="uploadBtn"
+                  class="px-3 py-2 rounded bg-gradient-to-r from-blue-500 to-indigo-600"
+                >
+                  Upload
+                </button>
+              </div>
+              <div id="mediaGrid" class="mt-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                <div class="border rounded p-3 text-center text-xs muted">No files yet</div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Users & Roles -->
+          <section id="users" class="page hidden">
+            <div class="glass p-5 rounded-xl">
+              <h3 class="font-semibold">Users & Roles</h3>
+              <table class="min-w-full mt-3 text-sm">
+                <thead class="bg-white/3 text-left">
+                  <tr>
+                    <th class="px-3 py-2">Name</th>
+                    <th class="px-3 py-2">Email</th>
+                    <th class="px-3 py-2">Role</th>
+                    <th class="px-3 py-2">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="border-b border-white/6 hover:bg-white/3">
+                    <td class="px-3 py-2">Admin</td>
+                    <td class="px-3 py-2">admin@mail.com</td>
+                    <td class="px-3 py-2">Admin</td>
+                    <td class="px-3 py-2">
+                      <button class="px-2 py-1 rounded bg-white/6">Edit</button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <!-- Settings -->
+          <section id="settings" class="page hidden">
+            <div class="glass p-5 rounded-xl">
+              <h3 class="font-semibold">Site Settings</h3>
+              <form class="mt-3 space-y-3">
+                <input placeholder="Site title" class="w-full bg-white/4 rounded px-3 py-2" />
+                <input
+                  placeholder="Default meta description"
+                  class="w-full bg-white/4 rounded px-3 py-2"
+                />
+                <input
+                  placeholder="Analytics ID (GA4)"
+                  class="w-full bg-white/4 rounded px-3 py-2"
+                />
+                <button class="px-4 py-2 rounded bg-gradient-to-r from-blue-500 to-indigo-600">
+                  Save Settings
+                </button>
+              </form>
+            </div>
+          </section>
+
+          <!-- Analytics -->
+          <section id="analytics" class="page hidden">
+            <div class="glass p-5 rounded-xl">
+              <h3 class="font-semibold">Analytics</h3>
+              <div class="mt-3 muted text-sm">
+                Integrate GA4 or fetch metrics server-side. Placeholder charts can be added with
+                Chart.js or Recharts.
+              </div>
+            </div>
+          </section>
+
+          <!-- Help -->
+          <section id="help" class="page hidden">
+            <div class="glass p-5 rounded-xl">
+              <h3 class="font-semibold">Help & Docs</h3>
+              <div class="mt-3 text-sm muted">
+                This UI is HTML + Tailwind prototype. Next steps: connect to API endpoints, add auth
+                (JWT + cookies), presign uploads to S3/Cloudinary and wire forms with
+                fetch/react-query.
+              </div>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <script>
+      // Simple SPA-like nav
+      const sections = document.querySelectorAll('.page')
+      const navItems = document.querySelectorAll('.nav-item')
+      function show(id) {
+        sections.forEach(s => s.classList.add('hidden'))
+        const el = document.getElementById(id)
+        if (el) el.classList.remove('hidden')
+        document.querySelector('.content-area').scrollTop = 0
+      }
+      navItems.forEach(i => i.addEventListener('click', e => show(e.currentTarget.dataset.section)))
+      // mobile menu
+      document.getElementById('mobileMenuBtn').addEventListener('click', () => {
+        const aside = document.querySelector('aside')
+        aside.classList.toggle('hidden')
+      })
+      // defaults
+      show('overview')
+
+      // previews
+      const cover = document.getElementById('coverImage')
+      if (cover) {
+        cover.addEventListener('change', e => {
+          const f = e.target.files[0]
+          const p = document.getElementById('coverPreview')
+          if (!f) return p.classList.add('hidden')
+          p.src = URL.createObjectURL(f)
+          p.classList.remove('hidden')
+        })
+      }
+      const profile = document.getElementById('profilePhoto')
+      if (profile) {
+        profile.addEventListener('change', e => {
+          const f = e.target.files[0]
+          if (!f) return
+          document.getElementById('profilePreview').src = URL.createObjectURL(f)
+        })
+      }
+      // mock media upload UI
+      document.getElementById('uploadBtn')?.addEventListener('click', () => {
+        const input = document.getElementById('mediaUpload')
+        const grid = document.getElementById('mediaGrid')
+        if (!input.files.length) return alert('Select files to upload')
+        for (const f of input.files) {
+          const div = document.createElement('div')
+          div.className = 'border rounded p-3 text-center'
+          div.innerHTML = `<div class='truncate text-xs mb-2'>${
+            f.name
+          }</div><div class='text-xs muted'>${(f.size / 1024).toFixed(0)} KB</div>`
+          grid.appendChild(div)
+        }
+        input.value = ''
+      })
+    </script>
+  </body>
+</html>

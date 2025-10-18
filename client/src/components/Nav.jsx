@@ -26,10 +26,6 @@ const Nav = ({ flex = false, isMobile = false }) => {
       name: 'Reviews',
       path: '/reviews',
     },
-    {
-      name: 'Blogs',
-      path: '/blogs',
-    },
   ]
   return (
     <nav
