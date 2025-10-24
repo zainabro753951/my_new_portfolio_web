@@ -9,3 +9,18 @@ export function colorGuess(lang) {
 
   return '#000000' // default
 }
+
+// 🔹 Helper function to convert object to FormData (recursively)
+export function appendFormData(formData, data, parentKey = '') {
+  if (data && typeof data === 'object' && !Array.isArray(data)) {
+    Object.keys(data).forEach(key => {
+      appendFormData(formData, data[key], parentKey ? `${parentKey}[${key}]` : key)
+    })
+  } else if (Array.isArray(data)) {
+    data.forEach((value, index) => {
+      appendFormData(formData, value, `${parentKey}[${index}]`)
+    })
+  } else {
+    formData.append(parentKey, data ?? '') // null/undefined ko empty string
+  }
+}

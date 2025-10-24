@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Site Settings — Dashboard UI</title>
+    <!-- Tailwind Play CDN for quick prototype -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      /* small glassmorphic helpers */
+      .glass {
+        background: linear-gradient(135deg, rgba(10, 10, 42, 0.6), rgba(16, 16, 64, 0.35));
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 8px 30px rgba(16, 185, 129, 0.06), 0 2px 10px rgba(6, 78, 59, 0.04);
+        backdrop-filter: blur(12px) saturate(120%);
+      }
+      .input-glass {
+        background: linear-gradient(90deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.02));
+        border: 1px solid rgba(34, 211, 238, 0.12);
+        backdrop-filter: blur(6px);
+      }
+    </style>
+  </head>
+  <body
+    class="min-h-screen bg-gradient-to-b from-[#071029] via-[#071630] to-[#020617] text-white p-6"
+  >
+    <main class="max-w-6xl mx-auto">
+      <header class="flex items-center justify-between mb-8">
+        <h1 class="text-2xl font-semibold tracking-tight">Site Settings</h1>
+        <div class="flex items-center gap-3">
+          <button
+            id="saveBtn"
+            class="px-4 py-2 rounded-full bg-cyan-500/90 hover:bg-cyan-400 transition"
+          >
+            Save Changes
+          </button>
+          <button
+            id="resetBtn"
+            class="px-4 py-2 rounded-full border border-white/10 hover:bg-white/3 transition"
+          >
+            Reset
+          </button>
+        </div>
+      </header>
+
+      <section class="glass rounded-2xl p-6 mb-6">
+        <h2 class="text-lg font-medium mb-4">Basic Site Info</h2>
+        <div class="grid md:grid-cols-3 gap-4">
+          <div class="md:col-span-2 space-y-4">
+            <label class="block">
+              <span class="text-gray-300 text-sm mb-2 block">Site Title</span>
+              <input
+                id="siteTitle"
+                type="text"
+                placeholder="Zain Abro | Frontend Developer"
+                class="w-full input-glass rounded-md px-4 py-3 focus:outline-none focus:ring-2 focus:ring-cyan-400/40"
+              />
+            </label>
+
+            <label class="block">
+              <span class="text-gray-300 text-sm mb-2 block">Tagline / Subtitle</span>
+              <input
+                id="siteTagline"
+                type="text"
+                placeholder="Crafting modern UI with React & Tailwind"
+                class="w-full input-glass rounded-md px-4 py-3"
+              />
+            </label>
+
+            <label class="block">
+              <span class="text-gray-300 text-sm mb-2 block">Footer Text</span>
+              <textarea
+                id="footerText"
+                rows="2"
+                placeholder="© 2025 Zain Abro. All Rights Reserved."
+                class="w-full input-glass rounded-md px-4 py-3 resize-none"
+              ></textarea>
+            </label>
+          </div>
+
+          <div class="flex flex-col items-center justify-start gap-4">
+            <div class="w-full">
+              <span class="text-gray-300 text-sm block mb-2">Site Logo</span>
+              <div class="flex items-center gap-3">
+                <div
+                  id="logoPreview"
+                  class="w-20 h-20 rounded-lg bg-white/5 flex items-center justify-center overflow-hidden border border-white/5"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="w-10 h-10 text-white/40"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="1.2"
+                      d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V7"
+                    />
+                  </svg>
+                </div>
+                <div class="flex-1">
+                  <input id="logoInput" type="file" accept="image/*" class="text-sm w-full" />
+                  <p class="text-xs text-gray-400 mt-1">PNG or SVG recommended. Max 2MB.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="w-full">
+              <span class="text-gray-300 text-sm block mb-2">Favicon</span>
+              <div class="flex items-center gap-3">
+                <div
+                  id="faviconPreview"
+                  class="w-12 h-12 rounded-sm bg-white/5 flex items-center justify-center overflow-hidden border border-white/5 text-xs"
+                >
+                  FAV
+                </div>
+                <div class="flex-1">
+                  <input id="faviconInput" type="file" accept="image/*" class="text-sm w-full" />
+                  <p class="text-xs text-gray-400 mt-1">ICO/PNG 32x32 or 64x64.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="glass rounded-2xl p-6 mb-6">
+        <h2 class="text-lg font-medium mb-4">SEO — Per Page Settings</h2>
+        <p class="text-sm text-gray-300 mb-4">
+          Add page-specific SEO title & description. These entries will be used when rendering
+          specific pages.
+        </p>
+
+        <div id="seoList" class="space-y-4">
+          <!-- dynamic SEO rows inserted here -->
+        </div>
+
+        <div class="mt-4 flex gap-3">
+          <button id="addSeoBtn" class="px-4 py-2 rounded-md bg-cyan-500/90">Add Page SEO</button>
+          <button id="clearSeoBtn" class="px-4 py-2 rounded-md border border-white/10">
+            Clear All
+          </button>
+        </div>
+      </section>
+
+      <section class="glass rounded-2xl p-6 mb-6">
+        <h2 class="text-lg font-medium mb-4">Social & Contact</h2>
+        <div class="grid md:grid-cols-2 gap-4">
+          <label>
+            <span class="text-gray-300 text-sm mb-2 block">LinkedIn</span>
+            <input
+              id="linkedin"
+              type="url"
+              placeholder="https://linkedin.com/in/username"
+              class="w-full input-glass rounded-md px-4 py-3"
+            />
+          </label>
+          <label>
+            <span class="text-gray-300 text-sm mb-2 block">GitHub</span>
+            <input
+              id="github"
+              type="url"
+              placeholder="https://github.com/username"
+              class="w-full input-glass rounded-md px-4 py-3"
+            />
+          </label>
+          <label>
+            <span class="text-gray-300 text-sm mb-2 block">Twitter / X</span>
+            <input
+              id="twitter"
+              type="url"
+              placeholder="https://twitter.com/username"
+              class="w-full input-glass rounded-md px-4 py-3"
+            />
+          </label>
+          <label>
+            <span class="text-gray-300 text-sm mb-2 block">Instagram</span>
+            <input
+              id="instagram"
+              type="url"
+              placeholder="https://instagram.com/username"
+              class="w-full input-glass rounded-md px-4 py-3"
+            />
+          </label>
+
+          <label>
+            <span class="text-gray-300 text-sm mb-2 block">Contact Email</span>
+            <input
+              id="contactEmail"
+              type="email"
+              placeholder="you@domain.com"
+              class="w-full input-glass rounded-md px-4 py-3"
+            />
+          </label>
+          <label>
+            <span class="text-gray-300 text-sm mb-2 block">Contact Phone</span>
+            <input
+              id="contactPhone"
+              type="text"
+              placeholder="+92 300 0000000"
+              class="w-full input-glass rounded-md px-4 py-3"
+            />
+          </label>
+        </div>
+      </section>
+
+      <section class="glass rounded-2xl p-6 mb-6">
+        <h2 class="text-lg font-medium mb-4">Theme, Integrations & Advanced</h2>
+        <div class="grid md:grid-cols-2 gap-4">
+          <label class="flex flex-col">
+            <span class="text-gray-300 text-sm mb-2">Default Theme</span>
+            <select id="themeMode" class="input-glass rounded-md px-4 py-3">
+              <option value="auto">Auto (System)</option>
+              <option value="light">Light</option>
+              <option value="dark">Dark</option>
+            </select>
+          </label>
+
+          <label class="flex flex-col">
+            <span class="text-gray-300 text-sm mb-2">Primary Accent Color</span>
+            <input id="accentColor" type="color" class="w-full h-12 rounded-md p-1" />
+          </label>
+
+          <label>
+            <span class="text-gray-300 text-sm mb-2 block">Google Analytics / Tracking ID</span>
+            <input
+              id="gaId"
+              type="text"
+              placeholder="G-XXXXXXXXXX or UA-XXXXX-X"
+              class="w-full input-glass rounded-md px-4 py-3"
+            />
+          </label>
+
+          <label>
+            <span class="text-gray-300 text-sm mb-2 block">Copyright Text</span>
+            <input
+              id="copyrightText"
+              type="text"
+              placeholder="© 2025 Zain Abro. All Rights Reserved."
+              class="w-full input-glass rounded-md px-4 py-3"
+            />
+          </label>
+        </div>
+
+        <div class="mt-4 text-sm text-gray-400">
+          Tip: Use the accent color to keep banners, buttons and highlights consistent across the
+          site.
+        </div>
+      </section>
+
+      <footer class="mt-6 text-sm text-gray-400">
+        Dashboard prototype — edit fields and press <strong>Save Changes</strong> to collect values
+        (demo only).
+      </footer>
+    </main>
+
+    <script>
+      // small helper: preview image inputs
+      const logoInput = document.getElementById('logoInput')
+      const logoPreview = document.getElementById('logoPreview')
+      const faviconInput = document.getElementById('faviconInput')
+      const faviconPreview = document.getElementById('faviconPreview')
+
+      logoInput?.addEventListener('change', e => {
+        const file = e.target.files?.[0]
+        if (!file) return
+        const url = URL.createObjectURL(file)
+        logoPreview.innerHTML = ''
+        const img = document.createElement('img')
+        img.src = url
+        img.alt = 'logo preview'
+        img.className = 'w-full h-full object-contain'
+        logoPreview.appendChild(img)
+      })
+
+      faviconInput?.addEventListener('change', e => {
+        const file = e.target.files?.[0]
+        if (!file) return
+        const url = URL.createObjectURL(file)
+        faviconPreview.innerHTML = ''
+        const img = document.createElement('img')
+        img.src = url
+        img.alt = 'favicon preview'
+        img.className = 'w-full h-full object-contain'
+        faviconPreview.appendChild(img)
+      })
+
+      // SEO rows dynamic list
+      const seoList = document.getElementById('seoList')
+      const addSeoBtn = document.getElementById('addSeoBtn')
+      const clearSeoBtn = document.getElementById('clearSeoBtn')
+
+      function createSeoRow(data = {}) {
+        const id = 'seo-' + Math.random().toString(36).slice(2, 9)
+        const container = document.createElement('div')
+        container.className = 'p-4 bg-white/3 rounded-lg border border-white/6'
+        container.dataset.id = id
+        container.innerHTML = `
+      <div class="flex items-start justify-between gap-3">
+        <div class="flex-1">
+          <label class="block mb-2 text-sm text-gray-200">Page Path (unique)</label>
+          <input data-key="path" class="w-full input-glass rounded-md px-3 py-2 mb-3" placeholder="/about or /projects/portfolio" value="${
+            data.path || ''
+          }" />
+          <label class="block mb-2 text-sm text-gray-200">Meta Title</label>
+          <input data-key="title" class="w-full input-glass rounded-md px-3 py-2 mb-3" placeholder="Page meta title" value="${
+            data.title || ''
+          }" />
+          <label class="block mb-2 text-sm text-gray-200">Meta Description</label>
+          <textarea data-key="description" rows="3" class="w-full input-glass rounded-md px-3 py-2 resize-none" placeholder="Short description for SEO">${
+            data.description || ''
+          }</textarea>
+        </div>
+        <div class="w-28 flex flex-col items-end gap-2">
+          <button data-action="remove" class="px-3 py-2 rounded-md border border-red-400/30 text-red-300">Remove</button>
+          <div class="text-xs text-gray-400 mt-auto">Added</div>
+        </div>
+      </div>
+    `
+        // remove handler
+        container
+          .querySelector('[data-action="remove"]')
+          .addEventListener('click', () => container.remove())
+        seoList.appendChild(container)
+        return container
+      }
+
+      addSeoBtn?.addEventListener('click', () => createSeoRow())
+      clearSeoBtn?.addEventListener('click', () => (seoList.innerHTML = ''))
+
+      // Save handling (demo: collects values and logs JSON)
+      document.getElementById('saveBtn').addEventListener('click', () => {
+        const data = {
+          siteTitle: document.getElementById('siteTitle').value,
+          siteTagline: document.getElementById('siteTagline').value,
+          footerText: document.getElementById('footerText').value,
+          social: {
+            linkedin: document.getElementById('linkedin').value,
+            github: document.getElementById('github').value,
+            twitter: document.getElementById('twitter').value,
+            instagram: document.getElementById('instagram').value,
+          },
+          contact: {
+            email: document.getElementById('contactEmail').value,
+            phone: document.getElementById('contactPhone').value,
+          },
+          theme: document.getElementById('themeMode').value,
+          accentColor: document.getElementById('accentColor').value,
+          gaId: document.getElementById('gaId').value,
+          copyrightText: document.getElementById('copyrightText').value,
+          seo: Array.from(seoList.children).map(node => ({
+            path: node.querySelector('[data-key="path"]').value,
+            title: node.querySelector('[data-key="title"]').value,
+            description: node.querySelector('[data-key="description"]').value,
+          })),
+        }
+
+        // logo & favicon file objects (if selected) — demo only (not uploading)
+        data.logo = logoInput.files?.[0]?.name || null
+        data.favicon = faviconInput.files?.[0]?.name || null
+
+        console.log('Collected site settings:', data)
+        alert('Settings collected — check console for JSON (demo).')
+      })
+
+      document.getElementById('resetBtn').addEventListener('click', () => {
+        if (!confirm('Reset all fields to default?')) return
+        document
+          .querySelectorAll('input[type=text], input[type=url], textarea')
+          .forEach(i => (i.value = ''))
+        document.getElementById('accentColor').value = '#06b6d4'
+        seoList.innerHTML = ''
+        logoPreview.innerHTML =
+          '<svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-white/40" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V7" /></svg>'
+        faviconPreview.innerHTML = 'FAV'
+      })
+
+      // initial accent color
+      document.getElementById('accentColor').value = '#06b6d4'
+    </script>
+  </body>
+</html>
