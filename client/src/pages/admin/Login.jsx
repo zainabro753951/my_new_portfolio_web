@@ -40,10 +40,7 @@ const Login = () => {
     formState: { errors },
   } = useForm()
   const [isShow, setIsShow] = useState(false)
-  const [isRememberMe, setIsRememberMe] = useState(false)
-
   const toggleShow = () => setIsShow(!isShow)
-  const toggleRemember = () => setIsRememberMe(!isRememberMe)
 
   const onSubmit = data => {
     mutate(data)
@@ -138,14 +135,10 @@ const Login = () => {
 
             {/* Remember Me + Forgot Password */}
             <div className="w-full flex items-center justify-between">
-              <label
-                className="flex items-center md:gap-[0.5vw] sm:gap-[1vw] xs:gap-[1.5vw] cursor-pointer select-none"
-                onClick={toggleRemember}
-              >
+              <label className="flex items-center md:gap-[0.5vw] sm:gap-[1vw] xs:gap-[1.5vw] cursor-pointer select-none">
                 <input
                   type="checkbox"
-                  checked={isRememberMe}
-                  readOnly
+                  {...register('rememberMe')}
                   className="accent-cyan-400 md:w-[1vw] md:h-[1vw] sm:w-[2vw] sm:h-[2vw] xs:w-[3.5vw] xs:h-[3.5vw]"
                 />
                 <span className="md:text-[1.1vw] sm:text-[2.1vw] xs:text-[3.6vw] text-theme-text-gray">

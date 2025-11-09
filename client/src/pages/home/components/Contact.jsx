@@ -1,12 +1,56 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { MdEmail, MdPhone } from 'react-icons/md'
-import { FaGithub, FaLinkedin, FaUpwork } from 'react-icons/fa6'
+import { FaFacebook, FaGithub, FaInstagram, FaLinkedin, FaUpwork } from 'react-icons/fa6'
 import { motion } from 'framer-motion'
 import { useCursorHoverContext } from '../../../context/CursorHover'
 import GardientButton from '../../../components/GardientButton'
+import { useForm } from 'react-hook-form'
+import { useSendMessage } from '../../../Queries/SendMessage'
+import { ToastContainer, toast } from 'react-toastify'
+import { useSelector } from 'react-redux'
+import ContactSectionSkeleton from '../../../components/ContactSectionSkeleton'
 
 const Contact = () => {
   const { onCursorEnter, onCursorLeave } = useCursorHoverContext()
+  const { contact_info, isLoading } = useSelector(state => state.siteSettings)
+  console.log(contact_info)
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm()
+
+  const { mutate, isPending, isSuccess, isError, data, error } = useSendMessage()
+
+  const onSubmit = data => {
+    mutate(data)
+  }
+
+  useEffect(() => {
+    if (isSuccess) {
+      toast.success(data?.message || 'Message sent successfully 🎉', {
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        theme: 'dark',
+      })
+    }
+    if (isError) {
+      const errMsg = error?.response?.data?.message || 'Something went wrong! Please try again.'
+      toast.error(errMsg, {
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        theme: 'dark',
+      })
+    }
+  }, [isSuccess, isError, data, error])
 
   // ✅ Optimized Framer Motion Variants (Less Overhead)
   const fadeInUp = {
@@ -27,6 +71,27 @@ const Contact = () => {
     },
   })
 
+  const contactIcons = [
+    {
+      Icon: FaGithub,
+      url: contact_info?.github || '#',
+    },
+    {
+      Icon: FaLinkedin,
+      url: contact_info?.linkedin || '#',
+    },
+    {
+      Icon: FaFacebook,
+      url: contact_info?.facebook || '#',
+    },
+    {
+      Icon: FaInstagram,
+      url: contact_info?.instagram || '#',
+    },
+  ]
+
+  if (isLoading) return <ContactSectionSkeleton />
+
   return (
     <motion.section
       initial="hidden"
@@ -34,6 +99,7 @@ const Contact = () => {
       viewport={{ once: true, amount: 0.2 }}
       className="w-full h-full bg-theme-dark text-white relative bg-circut overflow-hidden"
     >
+      <ToastContainer />
       {/* ✅ Background simplified & GPU accelerated */}
       <div className="absolute inset-0 overflow-hidden bg-theme-dark/70 will-change-transform">
         <motion.div
@@ -85,9 +151,9 @@ const Contact = () => {
                   <p
                     onMouseEnter={onCursorEnter}
                     onMouseLeave={onCursorLeave}
-                    className="text-gray-300 hover:text-theme-cyan transition-colors cursor-pointer md:text-[1.3vw]"
+                    className="text-gray-300 hover:text-theme-cyan  cursor-pointer md:text-[1.3vw] sm:text-[2.3vw] xs:text-[4.3vw] text-hover transition-all duration-300"
                   >
-                    zainabro886@gmail.com
+                    {contact_info?.email || 'zainabro886@gmail.com'}
                   </p>
                 </div>
                 <div className="flex items-center gap-[1.5vw]">
@@ -95,9 +161,9 @@ const Contact = () => {
                   <p
                     onMouseEnter={onCursorEnter}
                     onMouseLeave={onCursorLeave}
-                    className="text-gray-300 hover:text-theme-cyan transition-colors cursor-pointer md:text-[1.3vw]"
+                    className="text-gray-300 hover:text-theme-cyan  cursor-pointer md:text-[1.3vw] sm:text-[2.3vw] xs:text-[4.3vw] text-hover transition-all duration-300"
                   >
-                    +92 303 2150993
+                    {contact_info?.contactPhone || '+92 303 2150993'}
                   </p>
                 </div>
               </div>
@@ -109,8 +175,10 @@ const Contact = () => {
                 Stay Connected
               </h4>
               <div className="flex items-center gap-[1.5vw]">
-                {[FaGithub, FaLinkedin, FaUpwork].map((Icon, i) => (
-                  <motion.span
+                {contactIcons?.map(({ Icon, url }, i) => (
+                  <a
+                    href={url}
+                    target="_blank"
                     key={i}
                     whileHover={{ scale: 1.15 }}
                     transition={{ type: 'spring', stiffness: 300, damping: 15 }}
@@ -119,14 +187,18 @@ const Contact = () => {
                     className="md:text-[2.5vw] sm:text-[3.5vw] xs:text-[5.5vw] text-gray-300 hover:text-theme-cyan cursor-pointer"
                   >
                     <Icon />
-                  </motion.span>
+                  </a>
                 ))}
               </div>
             </motion.div>
           </motion.div>
 
           {/* ---------- RIGHT (FORM) ---------- */}
-          <motion.div variants={slideIn('right')} className="w-full h-full">
+          <motion.form
+            onSubmit={handleSubmit(onSubmit)}
+            variants={slideIn('right')}
+            className="w-full h-full"
+          >
             <motion.div
               whileHover={{ y: -4, scale: 1.01 }}
               transition={{ duration: 0.3, ease: 'easeOut' }}
@@ -137,31 +209,89 @@ const Contact = () => {
                   Send a Message
                 </h2>
 
-                {['Full name', 'Email', 'Your Message'].map((label, i) => (
-                  <motion.div key={i} variants={fadeInUp} custom={i}>
-                    <label className="text-gray-400">{label}</label>
-                    {label === 'Your Message' ? (
-                      <textarea
-                        rows={4}
-                        className="w-full p-3 mt-2 bg-gray-800 border border-gray-600 rounded-md focus:ring-4 ring-theme-cyan/40 focus:border-theme-cyan transition-all duration-200 resize-none outline-none"
-                        placeholder="Write your message here"
-                      ></textarea>
-                    ) : (
-                      <input
-                        type="text"
-                        className="w-full p-3 mt-2 bg-gray-800 border border-gray-600 rounded-md focus:ring-4 ring-theme-cyan/40 focus:border-theme-cyan transition-all duration-200 outline-none"
-                        placeholder={`Enter your ${label.toLowerCase()}`}
-                      />
-                    )}
-                  </motion.div>
-                ))}
+                {/* Full Name */}
+                <motion.div variants={fadeInUp} custom={0}>
+                  <label className="text-gray-400">Full name</label>
+                  <input
+                    type="text"
+                    {...register('fullName', {
+                      required: 'Full name is required',
+                      minLength: {
+                        value: 3,
+                        message: 'Full name must be at least 3 characters',
+                      },
+                    })}
+                    className="w-full p-3 mt-2 bg-gray-800 border border-gray-600 rounded-md focus:ring-4 ring-theme-cyan/40 focus:border-theme-cyan transition-all duration-200 outline-none"
+                    placeholder="Enter your full name"
+                  />
+                  {errors.fullName && (
+                    <p className="text-red-400 text-sm mt-1">{errors.fullName.message}</p>
+                  )}
+                </motion.div>
 
-                <motion.div variants={fadeInUp} custom={4}>
-                  <GardientButton text="Send Message" />
+                {/* Subject */}
+                <motion.div variants={fadeInUp} custom={0}>
+                  <label className="text-gray-400">Subject</label>
+                  <input
+                    type="text"
+                    {...register('subject', {
+                      required: 'Subject is required',
+                    })}
+                    className="w-full p-3 mt-2 bg-gray-800 border border-gray-600 rounded-md focus:ring-4 ring-theme-cyan/40 focus:border-theme-cyan transition-all duration-200 outline-none"
+                    placeholder="Enter your subject"
+                  />
+                  {errors.subject && (
+                    <p className="text-red-400 text-sm mt-1">{errors.subject.message}</p>
+                  )}
+                </motion.div>
+
+                {/* Email */}
+                <motion.div variants={fadeInUp} custom={1}>
+                  <label className="text-gray-400">Email</label>
+                  <input
+                    type="email"
+                    {...register('email', {
+                      required: 'Email is required',
+                      pattern: {
+                        value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                        message: 'Enter a valid email address',
+                      },
+                    })}
+                    className="w-full p-3 mt-2 bg-gray-800 border border-gray-600 rounded-md focus:ring-4 ring-theme-cyan/40 focus:border-theme-cyan transition-all duration-200 outline-none"
+                    placeholder="Enter your email"
+                  />
+                  {errors.email && (
+                    <p className="text-red-400 text-sm mt-1">{errors.email.message}</p>
+                  )}
+                </motion.div>
+
+                {/* Message */}
+                <motion.div variants={fadeInUp} custom={2}>
+                  <label className="text-gray-400">Your Message</label>
+                  <textarea
+                    rows={4}
+                    {...register('message', {
+                      required: 'Message is required',
+                      minLength: {
+                        value: 10,
+                        message: 'Message should be at least 10 characters long',
+                      },
+                    })}
+                    className="w-full p-3 mt-2 bg-gray-800 border border-gray-600 rounded-md focus:ring-4 ring-theme-cyan/40 focus:border-theme-cyan transition-all duration-200 resize-none outline-none"
+                    placeholder="Write your message here"
+                  ></textarea>
+                  {errors.message && (
+                    <p className="text-red-400 text-sm mt-1">{errors.message.message}</p>
+                  )}
+                </motion.div>
+
+                {/* Submit Button */}
+                <motion.div variants={fadeInUp} custom={3}>
+                  <GardientButton text={isPending ? 'Sending...' : 'Send Message'} type="submit" />
                 </motion.div>
               </div>
             </motion.div>
-          </motion.div>
+          </motion.form>
         </div>
       </div>
     </motion.section>

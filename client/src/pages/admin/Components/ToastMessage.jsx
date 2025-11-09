@@ -11,6 +11,7 @@ export const glassToast = (message, type = 'default') => {
       break
 
     case 'warning':
+    case 'warn':
       background = 'linear-gradient(to bottom right, rgba(80, 60, 0, 0.6), rgba(100, 80, 0, 0.3))'
       boxShadow = '0 0 20px rgba(250, 204, 21, 0.4)' // yellowish glow
       break

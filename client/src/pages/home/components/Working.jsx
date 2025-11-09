@@ -1,7 +1,10 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { FaCode, FaDatabase, FaUserLock } from 'react-icons/fa6'
 import { FiCpu } from 'react-icons/fi'
+import { useSelector } from 'react-redux'
+import { useGetServiceIcon } from '../../../Utils/getServiceIcon'
+import ServiceSkeleton from '../../../components/ServiceSkeleton'
 
 // 🎬 Animation Variants (Highly optimized & reusable)
 const fadeUp = {
@@ -24,28 +27,27 @@ const containerVariant = {
 }
 
 const Working = () => {
-  const cards = [
-    {
-      icon: <FaCode />,
-      title: 'Web Development',
-      desc: 'Crafting responsive and scalable web applications using modern frameworks like React and Next.js.',
-    },
-    {
-      icon: <FaDatabase />,
-      title: 'Backend Development',
-      desc: 'Designing secure and optimized APIs with Node.js, Express, and MongoDB for efficient data handling.',
-    },
-    {
-      icon: <FaUserLock />,
-      title: 'Authentication & Security',
-      desc: 'Implementing JWT, OAuth, and security best practices to safeguard applications and users.',
-    },
-    {
-      icon: <FiCpu />,
-      title: 'Performance Optimization',
-      desc: 'Enhancing web performance through lazy loading, caching, and code optimization for a smooth UX.',
-    },
-  ]
+  const { services, isLoading } = useSelector(state => state.service)
+  const [isPageReady, setIsPageReady] = useState(false)
+
+  // ⏳ Wait until loading finishes before animating
+  useEffect(() => {
+    if (!isLoading && services?.length > 0) {
+      // Small delay for smooth transition after skeleton disappears
+      const timeout = setTimeout(() => setIsPageReady(true), 200)
+      return () => clearTimeout(timeout)
+    }
+  }, [isLoading, services])
+
+  // 🧠 Prepare cards only when data is ready
+  const cards =
+    services?.map(item => ({
+      icon: useGetServiceIcon(item.title),
+      title: item.title,
+      desc: item.shortDesc,
+    })) || []
+
+  if (isLoading || !isPageReady) return <ServiceSkeleton />
 
   return (
     <motion.div
@@ -67,6 +69,8 @@ const Working = () => {
           {/* Cards Container */}
           <motion.div
             variants={containerVariant}
+            initial="initial"
+            animate="animate"
             className="md:mt-[1.5vw] sm:mt-[2.5vw] xs:mt-[3.5vw] grid md:grid-cols-4 sm:grid-cols-2 xs:grid-cols-1 md:gap-[1.5vw] sm:gap-[2.5vw] xs:gap-[3.5vw]"
           >
             {cards.map((item, idx) => (
@@ -79,7 +83,7 @@ const Working = () => {
                   boxShadow: '0 0 10px #06b5d46c, 0 0 20px #06b5d463, 0 0 30px #06b5d442',
                 }}
                 transition={{ duration: 0.3 }}
-                className="md:p-[0.2vw] sm:p-[0.4vw] xs:p-[0.8vw] md:rounded-[0.8vw] sm:rounded-[1.3vw] xs:rounded-[1.8vw] gradient-button "
+                className="md:p-[0.2vw] sm:p-[0.4vw] xs:p-[0.8vw] md:rounded-[0.8vw] sm:rounded-[1.3vw] xs:rounded-[1.8vw] gradient-button"
               >
                 <div className="w-full h-full md:p-[1.5vw] sm:p-[2vw] xs:p-[2.5vw] bg-theme-dark md:rounded-[0.8vw] sm:rounded-[1.3vw] xs:rounded-[1.8vw] flex flex-col md:gap-[1.5vw] sm:gap-[2vw] xs:gap-[2.5vw]">
                   <span className="md:text-[3vw] sm:text-[4vw] xs:text-[6vw] text-theme-cyan">

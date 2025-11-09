@@ -1,13 +1,9 @@
 import { useMutation } from '@tanstack/react-query'
-import axios from 'axios'
-
-const backendUrl = import.meta.env.VITE_BACKEND_URL
+import api from '../api/axios'
 
 // ✅ API call function (pure async function)
 const superAdminLoginRequest = async loginData => {
-  const response = await axios.post(`${backendUrl}/super-admin/login`, loginData, {
-    withCredentials: true,
-  })
+  const response = await api.post(`/super-admin/login`, loginData)
   return response.data
 }
 

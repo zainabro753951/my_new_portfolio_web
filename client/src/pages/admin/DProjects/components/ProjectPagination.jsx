@@ -1,4 +1,5 @@
 import React from 'react'
+import PaginationSkeleton from './PaginationSkeleton'
 
 const ProjectPagination = () => {
   const pages = [1, 2, 3, 4]

@@ -12,9 +12,14 @@ import {
   FaSliders,
   FaChartLine,
   FaBookOpen,
+  FaMessage,
+  FaBriefcase,
 } from 'react-icons/fa6'
-import { FaPhotoVideo, FaTools } from 'react-icons/fa'
+import { FiHelpCircle } from 'react-icons/fi'
+import { FaTools } from 'react-icons/fa'
 import { motion } from 'motion/react'
+import { MdHomeRepairService } from 'react-icons/md'
+MdHomeRepairService
 
 const Nav = () => {
   const navLinks = [
@@ -24,9 +29,12 @@ const Nav = () => {
     { name: 'About', icon: <FaCircleInfo />, path: 'about' },
     { name: 'Skills', icon: <FaTools />, path: 'skills' },
     { name: 'Education', icon: <FaGraduationCap />, path: 'education' },
+    { name: 'Experience', icon: <FaBriefcase />, path: 'experience' },
+    { name: 'Services', icon: <MdHomeRepairService />, path: 'services' },
+    { name: 'FAQs', icon: <FiHelpCircle />, path: 'faqs' },
     { name: 'Testimonials', icon: <FaComments />, path: 'testimonials' },
     { name: 'Pricing Plans', icon: <FaMoneyBillWave />, path: 'pricing-plan' },
-    { name: 'Media Manager', icon: <FaPhotoVideo />, path: 'media-manager' },
+    { name: 'User Messages', icon: <FaMessage />, path: 'user-messages' },
     { name: 'Users & Roles', icon: <FaUserShield />, path: 'users-roles' },
     { name: 'Site Settings', icon: <FaSliders />, path: 'site-settings' },
     { name: 'Analytics', icon: <FaChartLine />, path: 'analytics' },

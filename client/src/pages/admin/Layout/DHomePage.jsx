@@ -1,14 +1,17 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import Sidebar from '../Components/Sidebar'
 import { motion } from 'motion/react'
 import Header from '../Components/Header'
 import DHomeCards from '../DHome/components/DHomeCards'
 import { Outlet, useLocation } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify'
+import DeleteConfirm from '../Components/DeleteConfirm'
+import { useDeleteEntryContext } from '../../../context/DeleteEntry'
 
 const DHomePage = () => {
   const location = useLocation()
   const isDashboard = location.pathname === '/admin'
+
   return (
     <div className="w-full h-screen font-inter bg-gradient-to-br from-[#0b1120] via-[#0f1e3a] to-[#111827] relative overflow-hidden text-white">
       {/* 🔵 Animated Glass Blobs for depth */}
@@ -31,13 +34,16 @@ const DHomePage = () => {
         <ToastContainer />
 
         {/* 🔹 Dashboard Content Area */}
-        <main className="flex-1  backdrop-blur-md bg-white/5 border-l border-white/10 overflow-y-auto custom-scrollbar">
+        <main className="flex-1 backdrop-blur-md bg-white/5 border-l border-white/10 overflow-y-auto custom-scrollbar ">
           {/* Header */}
-          <Header />
+          <div className="relative z-[9999]">
+            <Header />
+          </div>
           {/* Cards */}
           {/* 👇 Agar /admin pe ho to cards dikhao, warna nested page */}
           {isDashboard ? <DHomeCards /> : <Outlet />}
         </main>
+        <DeleteConfirm />
       </div>
     </div>
   )

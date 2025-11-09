@@ -10,6 +10,7 @@ import PricingPlan from './components/PricingPlan'
 import Testimonial from '../../components/Testimonial'
 import Contact from './components/Contact'
 import Footer from '../../components/Footer'
+import HomeHeroSkeleton from './components/HomeHeroSkeleton'
 
 const HomePage = () => {
   return (

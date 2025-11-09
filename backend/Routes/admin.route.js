@@ -15,6 +15,6 @@ router.post('/super-admin/register', RegValidation, superAdminReg)
 router.post('/super-admin/login', loginValidation, superAdminLogin)
 
 // Admin Authenticated Route
-router.get('/super-admin/auth', SecureRoute, adminAuth)
+router.post('/super-admin/auth', SecureRoute, adminAuth)
 
 export default router

@@ -1,7 +1,13 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { motion } from 'motion/react'
-import { useForm } from 'react-hook-form'
+import { useFieldArray, useForm } from 'react-hook-form'
 import { FaCode } from 'react-icons/fa6'
+import { useAddPricePlan } from '../../../../Queries/AddPlan'
+import { glassToast } from '../../Components/ToastMessage'
+import { ThreeCircles } from 'react-loader-spinner'
+import { useParams } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+import { clearPlan, planFindById } from '../../../../features/planSlice'
 
 const glassClass = `
   w-full bg-gradient-to-br from-[#0a0a2a]/70 to-[#101040]/40
@@ -24,33 +30,114 @@ const fieldBase = `
 `
 
 const DPricingPlanForm = () => {
-  const [featurePointInput, setFeaturePointInput] = useState('')
-  const [featurePoints, setFeaturePoints] = useState([])
+  const { plans, plan } = useSelector(state => state.plan)
+  const { id } = useParams()
+  const dispatch = useDispatch()
+  const [isUpdate, setIsUpdate] = useState(false)
 
-  const addFeaturePoint = () => {
-    const val = featurePointInput.trim()
-    if (val && !featurePoints.includes(val)) {
-      setFeaturePoints(p => [...p, val])
-    }
-    setFeaturePointInput('')
+  const defaultValues = {
+    planName: '',
+    billingCycle: '',
+    price: '',
+    currency: '',
+    featurePoints: [],
+    shortDesc: '',
   }
-  console.log(featurePoints)
-
-  const removeFeaturePoint = t => setFeaturePoints(p => p.filter(x => x !== t))
 
   const {
     register,
     handleSubmit,
+    clearErrors,
+    setError,
+    reset,
+    control,
     formState: { errors },
-  } = useForm()
-  const onSubmit = data => console.log(data)
+  } = useForm({
+    defaultValues,
+  })
 
-  const featureKeyHandler = e => {
-    if (e.key === 'Enter') {
-      e.preventDefault()
-      addFeaturePoint()
+  useEffect(() => {
+    if (id && plans.length > 0) {
+      dispatch(planFindById(Number(id)))
+    } else {
+      dispatch(clearPlan())
+      reset(defaultValues)
     }
+  }, [id, dispatch, plans])
+
+  useEffect(() => {
+    if (plan && id && plan.id === Number(id)) {
+      reset({
+        planName: plan?.planName || '',
+        billingCycle: plan?.billingCycle || '',
+        price: plan?.price || '',
+        currency: plan?.currency || '',
+        featurePoints: plan?.featurePoints || [],
+        shortDesc: plan?.shortDesc || '',
+      })
+      setIsUpdate(true)
+    }
+  }, [plan, id])
+
+  const {
+    fields: featurePointField,
+    append: appendFeaturePoint,
+    remove: removeFeaturePoint,
+  } = useFieldArray({
+    control,
+    name: 'featurePoints',
+  })
+
+  const addFeaturePoint = e => {
+    e.preventDefault()
+    const input = e.target.form.querySelector('#featurePoints')
+
+    const value = input.value.trim()
+
+    // --- Clear old error
+    clearErrors('featurePoints')
+
+    // --- Validation checks
+    if (!value) {
+      setError('featurePoints', { type: 'required', message: 'Tech is required' })
+      return
+    }
+
+    if (value.length < 2) {
+      setError('featurePoints', {
+        type: 'minLength',
+        message: 'Tech must be at least 2 characters',
+      })
+      return
+    }
+
+    const isDuplicate = featurePointField.some(t => t.name.toLowerCase() === value.toLowerCase())
+    if (isDuplicate) {
+      setError('featurePoints', { type: 'duplicate', message: 'This tech already exists' })
+      return
+    }
+
+    appendFeaturePoint({ name: value })
+    input.value = ''
   }
+
+  const { mutate, isPending, isSuccess, isError, data, error } = useAddPricePlan()
+
+  const onSubmit = data => {
+    console.log(data)
+    mutate({ isUpdate, planId: id, ...data })
+  }
+
+  useEffect(() => {
+    if (isSuccess) {
+      console.log(data)
+      glassToast(data?.message, 'success')
+    }
+    if (isError) {
+      console.log(error?.response?.data)
+      glassToast(error?.response?.data?.message, 'error')
+    }
+  }, [isSuccess, isError])
 
   return (
     <motion.div
@@ -105,7 +192,72 @@ const DPricingPlanForm = () => {
           </div>
           <div className="w-full flex flex-col gap-0.5">
             <span className="md:text-[1vw] sm:text-[2vw] xs:text-[3.5vw] text-gray-300 mb-[0.5vw]">
-              Plan Name
+              Billing Cycle
+            </span>
+            <label>
+              <select
+                className={fieldBase}
+                {...register('billingCycle', {
+                  required: 'Please select a proficiency level',
+                })}
+              >
+                <option className="bg-black" value={''}>
+                  -- Select Billing Cycle --
+                </option>
+                <option className="bg-black" value={'Monthly'}>
+                  Monthly
+                </option>
+                <option className="bg-black" value={'One-time'}>
+                  One-time
+                </option>
+                <option className="bg-black" value={'Lifetime'}>
+                  Lifetime
+                </option>
+              </select>
+            </label>
+            {errors.billingCycle && (
+              <span className="md:text-[0.9vw] sm:text-[1.9vw] xs:text-[3.9vw] text-red-500">
+                This field is required
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* Row 2 */}
+        <div className="w-full grid md:grid-cols-2 xs:grid-cols-1 md:gap-[1vw] sm:gap-[2vw] xs:gap-[3vw]">
+          <div className="w-full flex flex-col ">
+            <label className="flex flex-col">
+              <span className="md:text-[1.1vw] sm:text-[2.1vw] xs:text-[4.1vw] text-gray-300 md:mb-[0.7vw] sm:mb-[1.7vw] xs:mb-[2.7vw]">
+                Price
+              </span>
+              <input
+                type="number"
+                min="1"
+                onKeyDown={e => {
+                  if (e.key === '-' || e.key === 'e' || e.key === '+') {
+                    e.preventDefault()
+                  }
+                }}
+                {...register('price', {
+                  required: 'Price is required',
+                  min: {
+                    value: 1,
+                    message: 'Price must be greater than 0',
+                  },
+                })}
+                placeholder="Enter price"
+                className={fieldBase}
+              />
+            </label>
+            {errors.title && (
+              <span className="md:text-[0.9vw] sm:text-[1.9vw] xs:text-[3.9vw] text-red-500">
+                {errors.title?.message}
+              </span>
+            )}
+          </div>
+          <div className="w-full flex flex-col gap-0.5">
+            <span className="md:text-[1vw] sm:text-[2vw] xs:text-[3.5vw] text-gray-300 mb-[0.5vw]">
+              Currency
             </span>
             <label>
               <select
@@ -135,40 +287,6 @@ const DPricingPlanForm = () => {
             )}
           </div>
         </div>
-
-        {/* Row 2 */}
-        <div className="w-full flex flex-col gap-0.5">
-          <span className="md:text-[1vw] sm:text-[2vw] xs:text-[3.5vw] text-gray-300 mb-[0.5vw]">
-            Billing Cycle
-          </span>
-          <label>
-            <select
-              className={fieldBase}
-              {...register('currency', {
-                required: 'Please select a proficiency level',
-              })}
-            >
-              <option className="bg-black" value={''}>
-                -- Select Billing Cycle --
-              </option>
-              <option className="bg-black" value={'Monthly'}>
-                Monthly
-              </option>
-              <option className="bg-black" value={'One-time'}>
-                One-time
-              </option>
-              <option className="bg-black" value={'Lifetime'}>
-                Lifetime
-              </option>
-            </select>
-          </label>
-          {errors.currency && (
-            <span className="md:text-[0.9vw] sm:text-[1.9vw] xs:text-[3.9vw] text-red-500">
-              This field is required
-            </span>
-          )}
-        </div>
-
         {/* Row 3 */}
         <div className="bg-white/4 backdrop-blur-md border border-white/10 md:rounded-[1.5vw] sm:rounded-[2vw] xs:rounded-[2.5vw] md:p-[1.2vw] sm:p-[2.2vw] xs:p-[3.2vw]">
           <div className="flex flex-wrap items-center justify-between md:mb-[1vw] sm:mb-[2vw] xs:mb-[3vw]">
@@ -182,9 +300,10 @@ const DPricingPlanForm = () => {
 
           <div className="flex md:gap-[0.9vw] sm:gap-[1.4vw] xs:gap-[1.9vw] items-center md:mb-[0.7vw] sm:mb-[1.7vw] xs:mb-[2.7vw]">
             <input
-              value={featurePointInput}
-              onChange={e => setFeaturePointInput(e.target.value)}
-              onKeyDown={featureKeyHandler}
+              id="featurePoints"
+              onKeyDown={e => {
+                if (e.key === 'Enter') addFeaturePoint(e)
+              }}
               placeholder="Add your feature point"
               className={fieldBase}
             />
@@ -197,14 +316,14 @@ const DPricingPlanForm = () => {
           </div>
 
           <div className="flex flex-wrap md:gap-[0.9vw] sm:gap-[1.4vw] xs:gap-[1.9vw]">
-            {featurePoints.map(t => (
+            {featurePointField.map((t, idx) => (
               <span
-                key={t}
+                key={idx}
                 className="md:px-[1vw] sm:px-[1.5vw] xs:px-[2vw] md:py-[0.4vw] sm:py-[0.9vw] xs:py-[1.4vw] rounded-full bg-white/6 md:text-[1.1vw] sm:text-[2.1vw] xs:text-[4.1vw] text-white flex items-center md:gap-[0.9vw] sm:gap-[1.4vw] xs:gap-[1.9vw]"
               >
-                {t}{' '}
+                {t.name}
                 <button
-                  onClick={() => removeFeaturePoint(t)}
+                  onClick={() => removeFeaturePoint(idx)}
                   className="text-gray-400 hover:text-red-300 ml-2"
                 >
                   ×
@@ -233,17 +352,28 @@ const DPricingPlanForm = () => {
         </div>
 
         {/* Submit Button */}
-        <motion.button
-          whileHover={{ scale: 1.03 }}
-          whileTap={{ scale: 0.97 }}
-          type="submit"
-          className="w-fit self-end mt-[1vw] md:px-[2vw] sm:px-[3vw] xs:px-[4vw] md:py-[0.8vw] sm:py-[1.5vw] xs:py-[2vw]
-          rounded-full bg-cyan-500/90 hover:bg-cyan-400 text-white
-          font-semibold md:text-[1vw] sm:text-[2vw] xs:text-[3.2vw]
-          transition-all duration-200 shadow-[0_0_15px_rgba(34,211,238,0.4)]"
-        >
-          Add Plan
-        </motion.button>
+        <div className="w-full flex items-center justify-end">
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            transition={{ type: 'spring', stiffness: 200 }}
+            whileTap={{ scale: 0.98 }}
+            className="md:py-[0.7vw] sm:py-[1.2vw] xs:py-[1.7vw] md:px-[2.5vw] sm:px-[3.5vw] xs:px-[4.5vw] bg-gradient-to-r from-cyan-500 to-blue-500 text-cyan-100 border border-cyan-500 shadow-[0_0_15px_rgba(34,211,238,0.25)] md:rounded-[0.7vw] sm:rounded-[1.2vw] xs:rounded-[1.7vw] md:text-[1vw] sm:text-[2vw] xs:text-[4vw] flex items-center justify-center"
+            title={isPending ? 'Loading...' : ''}
+            type={isPending ? 'button' : 'submit'}
+          >
+            {isPending ? (
+              <ThreeCircles
+                visible={true}
+                color="#ff657c"
+                width={20}
+                height={20}
+                ariaLabel="three-circles-loading"
+              />
+            ) : (
+              'Add Plan'
+            )}
+          </motion.button>
+        </div>
       </form>
     </motion.div>
   )

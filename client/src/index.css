@@ -19,8 +19,11 @@
 }
 
 .gradient-button {
-  background: linear-gradient(to right, #9235ea, #5161cf, #06b6d4);
+  background-image: linear-gradient(to right, #9235ea, #5161cf, #06b6d4);
+  background-size: cover;
+  background-repeat: no-repeat;
 }
+
 .gradient-button-shadow:hover {
   box-shadow: 0 0 20px #06b5d4cd;
   margin-bottom: 2px;
@@ -106,6 +109,7 @@
 }
 .custom-scrollbar::-webkit-scrollbar {
   width: 5px; /* Default width */
+  height: 5px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
@@ -139,4 +143,13 @@
 /* Hover effect on dropdown options */
 .custom-select option:hover {
   background: rgba(6, 182, 212, 0.5);
+}
+
+.glass-btn {
+  @apply px-3 py-2 rounded-lg bg-white/10 border border-white/30 backdrop-blur-md
+         hover:bg-white/20 transition shadow-md text-sm font-semibold;
+}
+
+.glass-active {
+  @apply bg-white/40 border-white/60 shadow-lg;
 }

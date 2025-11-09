@@ -1,7 +1,3 @@
-import { motion } from 'motion/react'
-import React from 'react'
-import Sidebar from '../Components/Sidebar'
-import Header from '../Components/Header'
 import DEduTable from './components/DEduTable'
 import DAddEducation from './components/DAddEducation'
 

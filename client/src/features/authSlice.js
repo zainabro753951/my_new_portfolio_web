@@ -16,9 +16,10 @@ export const authSlice = createSlice({
       state.admin = action.payload?.admin
     },
 
-    // Logout
     logoutAdmin: state => {
-      ;(state.isAuth = false), (state.adminToken = ''), (state.admin = [])
+      state.isAuth = false
+      state.adminToken = ''
+      state.admin = []
     },
   },
 })

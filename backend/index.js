@@ -14,6 +14,15 @@ import morgan from 'morgan'
 import adminRoute from './Routes/admin.route.js'
 import projectsRoute from './Routes/projects.route.js'
 import aboutRoute from './Routes/about.route.js'
+import skillsRoute from './Routes/skills.route.js'
+import educationRoute from './Routes/education.route.js'
+import testiRoute from './Routes/testimonials.route.js'
+import pricePlanRoute from './Routes/pricePlan.route.js'
+import siteSettingsRoute from './Routes/siteSettings.route.js'
+import contactMsgRoute from './Routes/contactMsg.route.js'
+import expRoute from './Routes/experience.route.js'
+import serviceRoute from './Routes/services.route.js'
+import faqsRoute from './Routes/faqs.route.js'
 
 const app = express()
 const PORT = process.env.PORT || 2500
@@ -37,7 +46,7 @@ app.disable('x-powered-by')
 ---------------------------------------- */
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  limit: 100, // max requests per IP
+  limit: 500, // max requests per IP
   standardHeaders: true,
   legacyHeaders: false,
   message: {
@@ -92,6 +101,15 @@ app.use(cookieParser())
 app.use(adminRoute)
 app.use(projectsRoute)
 app.use(aboutRoute)
+app.use(skillsRoute)
+app.use(educationRoute)
+app.use(testiRoute)
+app.use(pricePlanRoute)
+app.use(siteSettingsRoute)
+app.use(contactMsgRoute)
+app.use(expRoute)
+app.use(serviceRoute)
+app.use(faqsRoute)
 
 /* ----------------------------------------
    🩵 8. 404 + Error Handling

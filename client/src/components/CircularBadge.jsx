@@ -3,6 +3,7 @@ import { motion } from 'motion/react'
 import { useCursorHoverContext } from '../context/CursorHover'
 export default function CircularBadgeStatic({
   text = 'CREATIVE • DESIGN • DEVELOPMENT • CODE • SYSTEM • ',
+  aboutImage,
 }) {
   const { onCursorEnter, onCursorLeave } = useCursorHoverContext()
   const viewBox = 500
@@ -57,7 +58,11 @@ export default function CircularBadgeStatic({
 
       {/* Center image */}
       <div className="md:w-[21vw] md:h-[21vw] sm:w-[35vw] sm:h-[35vw] xs:w-[58vw] xs:h-[58vw] md:border-[0.3vw] sm:border-[0.6vw] xs:border-[0.9vw] border-theme-purple rounded-full absolute overflow-hidden">
-        <img src="/imgs/me.jpg" className="w-full h-full object-cover" alt="" />
+        <img
+          src={aboutImage?.url || '/imgs/me.jpg'}
+          className="w-full h-full object-cover"
+          alt={aboutImage?.key}
+        />
       </div>
     </div>
   )

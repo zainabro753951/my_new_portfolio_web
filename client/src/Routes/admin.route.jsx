@@ -6,6 +6,11 @@ import DAboutPage from '../pages/admin/DAbout/DAboutPage'
 import DProjectsPage from '../pages/admin/DProjects/DProjectsPage'
 import DAddProjectPage from '../pages/admin/DAddProject/DAddProjectPage'
 import DSkillsPage from '../pages/admin/DSkills/DSkillsPage'
+import DContactMessagePage from '../pages/admin/DContactMessage/DContactMessagePage'
+import DAnalyticsPage from '../pages/admin/DAnalytics/DAnalyticsPage'
+import DExperiencePage from '../pages/admin/DExperience/DExperiencePage'
+import DServicesPage from '../pages/admin/DServices/DServicesPage'
+import DFaqsPage from '../pages/admin/DFaqs/DFaqsPage'
 
 export const adminRoutes = [
   {
@@ -17,6 +22,10 @@ export const adminRoutes = [
     elem: <DAddProjectPage />,
   },
   {
+    path: 'add-project/:id',
+    elem: <DAddProjectPage />,
+  },
+  {
     path: 'about',
     elem: <DAboutPage />,
   },
@@ -25,11 +34,47 @@ export const adminRoutes = [
     elem: <DSkillsPage />,
   },
   {
+    path: 'skills/:id',
+    elem: <DSkillsPage />,
+  },
+  {
     path: 'education',
     elem: <DEducPage />,
   },
   {
+    path: 'education/:id',
+    elem: <DEducPage />,
+  },
+  {
+    path: 'experience',
+    elem: <DExperiencePage />,
+  },
+  {
+    path: 'experience/:id',
+    elem: <DExperiencePage />,
+  },
+  {
+    path: 'services',
+    elem: <DServicesPage />,
+  },
+  {
+    path: 'services/:id',
+    elem: <DServicesPage />,
+  },
+  {
+    path: 'faqs',
+    elem: <DFaqsPage />,
+  },
+  {
+    path: 'faqs/:id',
+    elem: <DFaqsPage />,
+  },
+  {
     path: 'testimonials',
+    elem: <DTestimonialPage />,
+  },
+  {
+    path: 'testimonials/:id',
     elem: <DTestimonialPage />,
   },
   {
@@ -37,7 +82,19 @@ export const adminRoutes = [
     elem: <DPricingPlanPage />,
   },
   {
+    path: 'pricing-plan/:id',
+    elem: <DPricingPlanPage />,
+  },
+  {
     path: 'site-settings',
     elem: <DSiteSettingsPage />,
+  },
+  {
+    path: 'user-messages',
+    elem: <DContactMessagePage />,
+  },
+  {
+    path: 'analytics',
+    elem: <DAnalyticsPage />,
   },
 ]

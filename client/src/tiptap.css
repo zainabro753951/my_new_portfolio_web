@@ -1,0 +1,219 @@
+/* ============================================================
+   RESPONSIVE FONT SCALE
+============================================================ */
+:root {
+  --text-base: 4.2vw;
+
+  --h1: 8.5vw;
+  --h2: 6.5vw;
+  --h3: 5vw;
+  --h4: calc(var(--h3) * 0.75);
+  --h5: calc(var(--h3) * 0.6);
+}
+
+@media (min-width: 640px) {
+  :root {
+    --text-base: 2.2vw;
+
+    --h1: 6.5vw;
+    --h2: 4.8vw;
+    --h3: 3.8vw;
+    --h4: calc(var(--h3) * 0.75);
+    --h5: calc(var(--h3) * 0.6);
+  }
+}
+
+@media (min-width: 768px) {
+  :root {
+    --text-base: 1.2vw;
+
+    --h1: 4vw;
+    --h2: 3vw;
+    --h3: 2.4vw;
+    --h4: calc(var(--h3) * 0.75);
+    --h5: calc(var(--h3) * 0.6);
+  }
+}
+
+/* ============================================================
+   SHARED BASE (Editor + Output)
+============================================================ */
+.rich-editor-content,
+.rich-output {
+  line-height: 1.45;
+  word-break: break-word;
+}
+
+.rich-editor-content p,
+.rich-editor-content li,
+.rich-editor-content a,
+.rich-editor-content span,
+.rich-editor-content td,
+.rich-editor-content th,
+.rich-editor-content blockquote,
+.rich-output p,
+.rich-output li,
+.rich-output a,
+.rich-output span,
+.rich-output td,
+.rich-output th,
+.rich-output blockquote {
+  font-size: var(--text-base);
+}
+
+/* ============================================================
+   HEADINGS SYSTEM — WITH SPAN FIX
+============================================================ */
+.rich-editor-content h1,
+.rich-editor-content h1 *,
+.rich-output h1,
+.rich-output h1 * {
+  font-size: var(--h1);
+  line-height: 1.05;
+}
+
+.rich-editor-content h2,
+.rich-editor-content h2 *,
+.rich-output h2,
+.rich-output h2 * {
+  font-size: var(--h2);
+  line-height: 1.1;
+}
+
+.rich-editor-content h3,
+.rich-editor-content h3 *,
+.rich-output h3,
+.rich-output h3 * {
+  font-size: var(--h3);
+  line-height: 1.15;
+}
+
+.rich-editor-content h4,
+.rich-editor-content h4 *,
+.rich-output h4,
+.rich-output h4 * {
+  font-size: var(--h4);
+  line-height: 1.2;
+}
+
+.rich-editor-content h5,
+.rich-editor-content h5 *,
+.rich-output h5,
+.rich-output h5 * {
+  font-size: var(--h5);
+  line-height: 1.25;
+}
+
+/* ============================================================
+   INLINE ELEMENT FIXES
+============================================================ */
+.rich-editor-content strong,
+.rich-output strong,
+.rich-editor-content b,
+.rich-output b {
+  font-weight: 700;
+}
+
+.rich-editor-content em,
+.rich-output em,
+.rich-editor-content i,
+.rich-output i {
+  font-style: italic;
+}
+
+/* ============================================================
+   LIST SYSTEM
+============================================================ */
+.rich-editor-content ul,
+.rich-output ul {
+  list-style: disc;
+  padding-left: 1.25rem;
+}
+
+.rich-editor-content ol,
+.rich-output ol {
+  list-style: decimal;
+  padding-left: 1.25rem;
+}
+
+.rich-editor-content li,
+.rich-output li {
+  margin: 0.35rem 0;
+}
+
+/* ✅ FIX — Always show visible bullet marker (first item issue solved) */
+.rich-editor-content ul li::marker,
+.rich-output ul li::marker {
+  font-size: var(--text-base);
+  content: '•  ';
+}
+
+/* Task list */
+.rich-editor-content .task-list-item,
+.rich-output .task-list-item {
+  list-style: none;
+  padding-left: 1.8em;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.rich-editor-content .task-list-item::before,
+.rich-output .task-list-item::before {
+  content: '☐';
+}
+
+.rich-editor-content .task-list-item.checked::before,
+.rich-output .task-list-item.checked::before {
+  content: '✅';
+}
+
+/* ============================================================
+   IMAGES
+============================================================ */
+.rich-editor-content img,
+.rich-output img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* ============================================================
+   GLASSMORPHIC BLOCKQUOTE
+============================================================ */
+.rich-editor-content blockquote,
+.rich-output blockquote {
+  font-style: italic;
+  padding: 1.4rem 1.6rem;
+  margin: 1.6rem 0;
+
+  background: rgba(146, 53, 234, 0.12);
+  backdrop-filter: blur(14px) saturate(180%);
+  -webkit-backdrop-filter: blur(14px) saturate(180%);
+
+  border-left: 6px solid #06b6d4;
+  border-radius: 14px;
+  border: 1px solid rgba(81, 97, 207, 0.3);
+
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18);
+  color: #fff;
+}
+
+/* SM */
+@media (min-width: 640px) {
+  .rich-editor-content blockquote,
+  .rich-output blockquote {
+    padding: 1.2rem 1.4rem;
+    border-left-width: 7px;
+    border-radius: 16px;
+  }
+}
+
+/* MD */
+@media (min-width: 768px) {
+  .rich-editor-content blockquote,
+  .rich-output blockquote {
+    padding: 1rem 1.2rem;
+    border-left-width: 8px;
+    border-radius: 18px;
+  }
+}

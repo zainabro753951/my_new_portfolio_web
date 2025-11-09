@@ -1,7 +1,10 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { colorGuess } from '../Utils/Utils'
 import GardientButton from './GardientButton'
+import { useSelector } from 'react-redux'
+import FeaturedReposSkeleton from './FeaturedRepoSkeleton'
+import { Link } from 'react-router-dom'
 
 // Variants
 const containerVariants = {
@@ -53,6 +56,17 @@ const buttonVariants = {
 }
 
 const FeaturedRepos = () => {
+  const { projects, isLoading } = useSelector(state => state.projects)
+  const [isPageReady, setIsPageReady] = useState(false)
+
+  // ⏳ Wait until loading finishes before animating
+  useEffect(() => {
+    if (!isLoading && projects?.length > 0) {
+      // Small delay for smooth transition after skeleton disappears
+      const timeout = setTimeout(() => setIsPageReady(true), 200)
+      return () => clearTimeout(timeout)
+    }
+  }, [isLoading, projects])
   const repos = [
     {
       img: '/imgs/projects/project1.jpg',
@@ -80,6 +94,9 @@ const FeaturedRepos = () => {
     },
   ]
 
+  if (isLoading || !isPageReady) return <FeaturedReposSkeleton />
+  console.log(projects)
+
   return (
     <motion.div
       variants={containerVariants}
@@ -98,66 +115,75 @@ const FeaturedRepos = () => {
       {/* Cards */}
       <motion.div
         variants={containerVariants}
-        className="md:my-[1.5vw] sm:my-[2.5vw] xs:my-[3.5vw] grid md:grid-cols-3 sm:grid-cols-2 xs:grid-cols-1 md:gap-[1.5vw] sm:gap-[2.5vw] xs:gap-[3.5vw]"
+        className="md:my-[1.5vw] sm:my-[2.5vw] xs:my-[3.5vw] grid md:grid-cols-3 sm:grid-cols-2 xs:grid-cols-1 md:gap-[1.5vw] sm:gap-[2.5vw] xs:gap-[3.5vw] place-items-start"
       >
-        {repos.map((item, idx) => {
-          const color = colorGuess(item.techStack)
+        {projects.map((item, idx) => {
+          console.log(item)
+          const color = colorGuess(item.techStack[0]?.name)
+
           return (
-            <motion.div
-              key={idx}
-              whileHover={{
-                y: -8,
-                scale: 1.02,
-                boxShadow: '0 0 10px #06b5d46c, 0 0 20px #06b5d463, 0 0 30px #06b5d442',
-              }}
-              transition={{ duration: 0.3 }}
-              variants={cardVariants}
-              className="md:p-[0.2vw] sm:p-[0.4vw] xs:p-[0.8vw] md:rounded-[0.8vw] sm:rounded-[1.3vw] xs:rounded-[1.8vw] gradient-button "
-            >
-              <div className="w-full h-full md:p-[1.5vw] sm:p-[2vw] xs:p-[2.5vw] bg-theme-dark md:rounded-[0.8vw] sm:rounded-[1.3vw] xs:rounded-[1.8vw] flex flex-col md:gap-[1vw] sm:gap-[1.5vw] xs:gap-[2vw]">
+            <>
+              <Link key={idx} to={`/projects/${item?.slug}/${item?.id}`}>
                 <motion.div
-                  className="md:w-full md:h-[20vw] sm:h-[30vw] xs:h-[40vw]"
-                  whileHover={{ scale: 1.03 }}
-                  transition={{ duration: 0.3, ease: 'easeOut' }}
+                  whileHover={{
+                    y: -8,
+                    scale: 1.02,
+                    boxShadow: '0 0 10px #06b5d46c, 0 0 20px #06b5d463, 0 0 30px #06b5d442',
+                  }}
+                  transition={{ duration: 0.3 }}
+                  variants={cardVariants}
+                  className="md:p-[0.2vw] sm:p-[0.4vw] xs:p-[0.8vw] md:rounded-[0.8vw] sm:rounded-[1.3vw] xs:rounded-[1.8vw] gradient-button "
                 >
-                  <img src={item.img} className="w-full h-full object-cover" alt={item.title} />
+                  <div className="w-full h-full md:p-[1.5vw] sm:p-[2vw] xs:p-[2.5vw] bg-theme-dark md:rounded-[0.8vw] sm:rounded-[1.3vw] xs:rounded-[1.8vw] flex flex-col md:gap-[1vw] sm:gap-[1.5vw] xs:gap-[2vw]">
+                    <motion.div
+                      className="md:w-full md:h-[20vw] sm:h-[30vw] xs:h-[40vw]"
+                      whileHover={{ scale: 1.03 }}
+                      transition={{ duration: 0.3, ease: 'easeOut' }}
+                    >
+                      <img
+                        src={item?.heroImage?.url || '/imgs/elementor-placeholder-image.png'}
+                        className="w-full h-full object-cover"
+                        alt={item?.title || 'Default Image'}
+                      />
+                    </motion.div>
+
+                    <h2 className="md:text-[1.6vw] sm:text-[2.6vw] xs:text-[4.6vw] font-semibold font-fira-code">
+                      {item.title}
+                    </h2>
+
+                    <p className="md:text-[1.2vw] sm:text-[2.2vw] xs:text-[4.2vw] text-gray-400">
+                      {item.shortDesc}
+                    </p>
+
+                    <div className="w-full h-full flex flex-col justify-between md:gap-[1.5vw] sm:gap-[2.5vw] xs:gap-[3.5vw]">
+                      <div className="md:text-[1.2vw] sm:text-[2.2vw] xs:text-[4.2vw] text-gray-400 flex items-center gap-2">
+                        <div
+                          className="md:w-[1.2vw] md:h-[1.2vw] sm:w-[2.2vw] sm:h-[2.2vw] xs:w-[3.3vw] xs:h-[3.3vw] rounded-full"
+                          style={{ backgroundColor: color }}
+                        ></div>
+                        <p>{item.techStack[0]?.name}</p>
+                      </div>
+                      <div className="w-full flex items-center justify-between">
+                        <a
+                          href={item.liveLink}
+                          target="_blank"
+                          className="md:text-[1.3vw] sm:text-[2.3vw] xs:text-[4.3vw] hover:text-theme-purple"
+                        >
+                          Live Demo
+                        </a>
+                        <a
+                          href={item.repoLink}
+                          target="_blank"
+                          className="md:text-[1.3vw] sm:text-[2.3vw] xs:text-[4.3vw] hover:text-theme-purple"
+                        >
+                          Repository
+                        </a>
+                      </div>
+                    </div>
+                  </div>
                 </motion.div>
-
-                <h2 className="md:text-[1.6vw] sm:text-[2.6vw] xs:text-[4.6vw] font-semibold font-fira-code">
-                  {item.title}
-                </h2>
-
-                <p className="md:text-[1.2vw] sm:text-[2.2vw] xs:text-[4.2vw] text-gray-400">
-                  {item.desc}
-                </p>
-
-                <div className="w-full h-full  flex flex-col justify-between">
-                  <div className="md:text-[1.2vw] sm:text-[2.2vw] xs:text-[4.2vw] text-gray-400 flex items-center gap-2">
-                    <div
-                      className="md:w-[1.2vw] md:h-[1.2vw] sm:w-[2.2vw] sm:h-[2.2vw] xs:w-[3.3vw] xs:h-[3.3vw] rounded-full"
-                      style={{ backgroundColor: color }}
-                    ></div>
-                    <p>{item.techStack}</p>
-                  </div>
-                  <div className="w-full flex items-center justify-between">
-                    <a
-                      href={item.liveLink}
-                      target="_blank"
-                      className="md:text-[1.3vw] sm:text-[2.3vw] xs:text-[4.3vw] hover:text-theme-purple"
-                    >
-                      Live Demo
-                    </a>
-                    <a
-                      href={item.repoLink}
-                      target="_blank"
-                      className="md:text-[1.3vw] sm:text-[2.3vw] xs:text-[4.3vw] hover:text-theme-purple"
-                    >
-                      Repository
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
+              </Link>
+            </>
           )
         })}
       </motion.div>

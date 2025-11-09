@@ -1,6 +1,9 @@
 import { motion } from 'motion/react'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { FaEdit, FaTrashAlt } from 'react-icons/fa'
+import { useSelector } from 'react-redux'
+import { Link } from 'react-router-dom'
+import { useDeleteEntryContext } from '../../../../context/DeleteEntry'
 
 const glassClass = `md:p-[1.5vw] sm:p-[2vw] xs:p-[2.5vw] md:rounded-[1.5vw] sm:rounded-[2vw] xs:rounded-[2.5vw]
       bg-gradient-to-br from-[#0a0a2a]/60 to-[#101040]/30
@@ -25,6 +28,16 @@ const plan = [
 ]
 
 const DPricingPlanTable = () => {
+  const { plans } = useSelector(state => state.plan)
+  const { setRoute, setIsOpen, setQueryKey } = useDeleteEntryContext()
+
+  // ✅ Whenever something deletes successfully, call refetch()
+  useEffect(() => {
+    setQueryKey('pricePlan') // used for DeleteConfirm context
+  }, [setQueryKey])
+
+  console.log(plans)
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -58,7 +71,7 @@ const DPricingPlanTable = () => {
             </div>
             {/* Scrollable Table Body */}
             <div className="md:max-h-[25vw] sm:max-h-[55vw] xs:max-h-[75vw] overflow-y-auto custom-scrollbar divide-y divide-cyan-400/20 ">
-              {plan.map((item, index) => (
+              {plans.map((item, index) => (
                 <div
                   key={index}
                   className="grid grid-cols-5 items-center text-cyan-100 md:text-[0.95vw] sm:text-[1.9vw] xs:text-[3.5vw]
@@ -68,34 +81,40 @@ const DPricingPlanTable = () => {
                   <div
                     className={`md:py-[1.5vw] sm:py-[2.5vw] xs:py-[3.5vw] text-center font-medium`}
                   >
-                    {item.planName}
+                    {item?.planName}
                   </div>
                   <div
                     className={`md:py-[1.5vw] sm:py-[2.5vw] xs:py-[3.5vw] text-center font-medium`}
                   >
-                    {item.price}
+                    {item?.price}
                   </div>
                   <div
                     className={`md:py-[1.5vw] sm:py-[2.5vw] xs:py-[3.5vw] text-center font-medium`}
                   >
-                    {item.currency}
+                    {item?.currency}
                   </div>
                   <div
                     className={`md:py-[1.5vw] sm:py-[2.5vw] xs:py-[3.5vw] text-center font-medium`}
                   >
-                    {item.billingCycle}
+                    {item?.billingCycle}
                   </div>
                   <div className="md:py-[1.5vw] sm:py-[2.5vw] xs:py-[3.5vw] flex justify-center md:gap-[1vw] sm:gap-[2vw] xs:gap-[3vw]">
-                    <button
+                    <Link
+                      to={`/admin/pricing-plan/${item?.id}`}
                       className={
                         actionButtonClass +
                         'from-purple-600/30 to-indigo-600/30 border border-purple-500/40 text-purple-200 hover:from-purple-500/50 hover:to-indigo-500/40 shadow-[0_0_10px_rgba(147,51,234,0.3)]'
                       }
                     >
                       <FaEdit className="md:text-[0.9vw] sm:text-[1.9vw] xs:text-[3.9vw]" />
-                    </button>
+                    </Link>
 
                     <button
+                      onClick={() => {
+                        setRoute(`/plan/delete/${item?.id}`)
+                        setIsOpen(true)
+                        setQueryKey('pricePlan')
+                      }}
                       className={
                         actionButtonClass +
                         'from-cyan-600/30 to-blue-600/30 border border-cyan-500/40 text-cyan-200 hover:from-cyan-500/50 hover:to-blue-500/40 shadow-[0_0_10px_rgba(34,211,238,0.3)]'

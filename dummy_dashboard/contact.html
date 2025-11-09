@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Contact Messages — Admin Dashboard (Dark, Glassmorphic)</title>
+
+    <!-- Tailwind Play CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              glass: 'rgba(255,255,255,0.04)',
+            },
+          },
+        },
+      }
+    </script>
+
+    <style>
+      /* Glassmorphism utilities not built into Tailwind by default */
+      .glass {
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
+        backdrop-filter: blur(12px) saturate(120%);
+        -webkit-backdrop-filter: blur(12px) saturate(120%);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        box-shadow: 0 6px 24px rgba(2, 6, 23, 0.6);
+      }
+      .glass-accent {
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
+        border: 1px solid rgba(99, 102, 241, 0.08);
+        box-shadow: 0 8px 30px rgba(99, 102, 241, 0.06);
+      }
+      /* subtle focus ring */
+      .focus-ring:focus {
+        outline: 2px solid rgba(99, 102, 241, 0.14);
+        outline-offset: 2px;
+      }
+      /* hide native scrollbar for better look */
+      .no-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+      .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+    </style>
+  </head>
+  <body
+    class="bg-gradient-to-br from-[#030617] via-[#071128] to-[#05040a] text-slate-200 min-h-screen"
+  >
+    <div class="max-w-7xl mx-auto p-6">
+      <header class="flex items-center justify-between mb-6">
+        <div>
+          <h1 class="text-2xl font-semibold tracking-tight">Contact Messages</h1>
+          <p class="text-sm text-slate-400">
+            All messages submitted through your website contact form
+          </p>
+        </div>
+        <div class="flex items-center gap-3">
+          <div class="relative">
+            <input
+              id="globalSearch"
+              type="search"
+              placeholder="Search name, email, subject..."
+              aria-label="Search"
+              class="w-72 py-2 pl-10 pr-3 rounded-xl glass focus-ring placeholder:text-slate-400 text-sm"
+            />
+            <svg
+              class="w-5 h-5 absolute left-3 top-2.5 text-slate-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1116.65 16.65z"
+              ></path>
+            </svg>
+          </div>
+          <div class="glass rounded-xl px-3 py-2 flex items-center gap-2">
+            <label for="filterStatus" class="text-sm text-slate-300">Filter:</label>
+            <select id="filterStatus" class="bg-transparent text-sm focus-ring text-slate-200">
+              <option value="all">All</option>
+              <option value="new">New</option>
+              <option value="read">Read</option>
+              <option value="unread">Unread</option>
+            </select>
+          </div>
+          <div class="glass rounded-xl px-3 py-2 flex items-center gap-2">
+            <button
+              id="bulkMark"
+              class="text-sm px-3 py-1 rounded-md bg-indigo-600/30 hover:bg-indigo-600/40"
+            >
+              Mark Read
+            </button>
+            <button
+              id="bulkDelete"
+              class="text-sm px-3 py-1 rounded-md bg-red-600/20 hover:bg-red-600/30"
+            >
+              Delete
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <main class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Messages list (left) -->
+        <section class="lg:col-span-2">
+          <div class="glass p-4 rounded-2xl">
+            <div class="overflow-x-auto">
+              <table class="min-w-full text-left table-auto">
+                <thead class="text-slate-400 text-xs uppercase">
+                  <tr>
+                    <th class="w-12 pl-4">
+                      <input id="checkAll" type="checkbox" class="accent-indigo-500" />
+                    </th>
+                    <th class="pl-4">Sender</th>
+                    <th>Subject</th>
+                    <th class="hidden md:table-cell">Email</th>
+                    <th class="w-36">Date</th>
+                    <th class="w-28">Status</th>
+                    <th class="w-28">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="messagesTbody" class="divide-y divide-slate-700">
+                  <!-- Rows injected by JS -->
+                </tbody>
+              </table>
+            </div>
+
+            <div class="mt-4 flex items-center justify-between text-sm text-slate-400">
+              <div id="rowsInfo">Showing 0 messages</div>
+              <div class="flex items-center gap-2">
+                <button id="prevPage" class="px-3 py-1 rounded-md glass">Prev</button>
+                <span id="currentPage">1</span>
+                <button id="nextPage" class="px-3 py-1 rounded-md glass">Next</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Right side: Quick preview + stats -->
+        <aside class="space-y-4">
+          <div class="glass p-4 rounded-2xl">
+            <h2 class="text-sm text-slate-300 font-medium">Quick Stats</h2>
+            <div class="mt-3 grid grid-cols-3 gap-3">
+              <div class="p-3 rounded-xl glass-accent text-center">
+                <div class="text-xs text-slate-300">Total</div>
+                <div id="statTotal" class="text-lg font-semibold">0</div>
+              </div>
+              <div class="p-3 rounded-xl glass-accent text-center">
+                <div class="text-xs text-slate-300">New</div>
+                <div id="statNew" class="text-lg font-semibold">0</div>
+              </div>
+              <div class="p-3 rounded-xl glass-accent text-center">
+                <div class="text-xs text-slate-300">Unread</div>
+                <div id="statUnread" class="text-lg font-semibold">0</div>
+              </div>
+            </div>
+          </div>
+
+          <div id="drawerEmpty" class="glass p-4 rounded-2xl text-slate-400">
+            Select a message to preview
+          </div>
+
+          <!-- Drawer area (will replace drawerEmpty when opened) -->
+          <div
+            id="drawer"
+            class="glass p-4 rounded-2xl hidden flex-col h-96 overflow-y-auto no-scrollbar"
+          >
+            <div class="flex items-start justify-between">
+              <div>
+                <div id="drawerSender" class="font-semibold text-slate-100">Sender Name</div>
+                <div id="drawerMeta" class="text-xs text-slate-400">email • date</div>
+              </div>
+              <div class="flex items-center gap-2">
+                <button id="markToggle" class="text-sm px-3 py-1 rounded-md glass">
+                  Mark Read
+                </button>
+                <button id="deleteBtn" class="text-sm px-3 py-1 rounded-md bg-red-600/20">
+                  Delete
+                </button>
+              </div>
+            </div>
+            <hr class="my-3 border-slate-700" />
+            <div id="drawerMessage" class="whitespace-pre-wrap text-slate-200 text-sm"></div>
+          </div>
+        </aside>
+      </main>
+    </div>
+
+    <script>
+      /* Sample data - replace or fetch from your server */
+      const sampleMessages = [
+        {
+          id: 1,
+          name: 'Aisha Khan',
+          email: 'aisha@example.com',
+          subject: 'Website project inquiry',
+          message: "Hi! I'd like to hire you for a portfolio site. Budget 2000 USD.",
+          date: '2025-10-24 14:12',
+          status: 'new',
+        },
+        {
+          id: 2,
+          name: 'Bilal Ahmed',
+          email: 'bilal@sample.com',
+          subject: 'Bug report',
+          message: 'Found a small bug on contact page when submitting the form.',
+          date: '2025-10-23 09:05',
+          status: 'unread',
+        },
+        {
+          id: 3,
+          name: 'Sara Malik',
+          email: 'sara@domain.com',
+          subject: 'Collaboration',
+          message: 'Love your work — want to collab on a project next month.',
+          date: '2025-10-22 18:40',
+          status: 'read',
+        },
+        {
+          id: 4,
+          name: 'Hamza Ali',
+          email: 'hamza@host.com',
+          subject: 'Question about services',
+          message: 'Do you accept installment payments?',
+          date: '2025-10-21 11:20',
+          status: 'new',
+        },
+        {
+          id: 5,
+          name: 'Noor',
+          email: 'noor@abc.com',
+          subject: 'Thanks!',
+          message: 'Thanks for the quick reply earlier.',
+          date: '2025-10-20 08:00',
+          status: 'read',
+        },
+      ]
+
+      // State
+      let messages = structuredClone(sampleMessages)
+      let page = 1
+      const perPage = 6
+      let selectedId = null
+
+      // Elements
+      const tbody = document.getElementById('messagesTbody')
+      const statTotal = document.getElementById('statTotal')
+      const statNew = document.getElementById('statNew')
+      const statUnread = document.getElementById('statUnread')
+      const rowsInfo = document.getElementById('rowsInfo')
+      const currentPage = document.getElementById('currentPage')
+      const prevPage = document.getElementById('prevPage')
+      const nextPage = document.getElementById('nextPage')
+      const globalSearch = document.getElementById('globalSearch')
+      const filterStatus = document.getElementById('filterStatus')
+      const drawer = document.getElementById('drawer')
+      const drawerEmpty = document.getElementById('drawerEmpty')
+      const drawerSender = document.getElementById('drawerSender')
+      const drawerMeta = document.getElementById('drawerMeta')
+      const drawerMessage = document.getElementById('drawerMessage')
+      const markToggle = document.getElementById('markToggle')
+      const deleteBtn = document.getElementById('deleteBtn')
+      const checkAll = document.getElementById('checkAll')
+      const bulkMark = document.getElementById('bulkMark')
+      const bulkDelete = document.getElementById('bulkDelete')
+
+      function render() {
+        // Apply search + filter
+        const q = globalSearch.value.trim().toLowerCase()
+        const f = filterStatus.value
+        let filtered = messages.filter(m => {
+          if (f !== 'all') {
+            if (f === 'new' && m.status !== 'new') return false
+            if (f === 'read' && m.status !== 'read') return false
+            if (f === 'unread' && m.status !== 'unread') return false
+          }
+          if (!q) return true
+          return [m.name, m.email, m.subject, m.message].join(' ').toLowerCase().includes(q)
+        })
+
+        // Pagination
+        const total = filtered.length
+        const pages = Math.max(1, Math.ceil(total / perPage))
+        page = Math.min(page, pages)
+        const start = (page - 1) * perPage
+        const pageItems = filtered.slice(start, start + perPage)
+
+        tbody.innerHTML = ''
+        pageItems.forEach(m => {
+          const tr = document.createElement('tr')
+          tr.className = 'hover:bg-[rgba(255,255,255,0.02)]'
+          tr.innerHTML = `
+          <td class="pl-4 py-3"><input data-id="${
+            m.id
+          }" type="checkbox" class="rowCheck accent-indigo-500" /></td>
+          <td class="pl-4 py-3">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-indigo-600/30 to-pink-600/20 flex items-center justify-center text-sm font-semibold">${initials(
+                m.name
+              )}</div>
+              <div>
+                <div class="font-medium text-slate-100">${escapeHtml(m.name)}</div>
+                <div class="text-xs text-slate-400 md:hidden">${escapeHtml(m.email)}</div>
+              </div>
+            </div>
+          </td>
+          <td class="py-3"> <button data-id="${
+            m.id
+          }" class="openBtn text-sm text-slate-300 hover:underline">${escapeHtml(
+            m.subject
+          )}</button></td>
+          <td class="py-3 hidden md:table-cell text-sm text-slate-400">${escapeHtml(m.email)}</td>
+          <td class="py-3 text-sm text-slate-400">${escapeHtml(m.date)}</td>
+          <td class="py-3"><span class="px-2 py-1 rounded-full text-xs ${badgeClass(
+            m.status
+          )}">${capitalize(m.status)}</span></td>
+          <td class="py-3">
+            <div class="flex items-center gap-2">
+              <button data-id="${m.id}" class="openBtn text-slate-300 text-sm">View</button>
+              <button data-id="${m.id}" class="delBtn text-red-400 text-sm">Delete</button>
+            </div>
+          </td>
+        `
+          tbody.appendChild(tr)
+        })
+
+        // Update stats and pagination info
+        statTotal.textContent = messages.length
+        statNew.textContent = messages.filter(m => m.status === 'new').length
+        statUnread.textContent = messages.filter(m => m.status === 'unread').length
+        rowsInfo.textContent = `Showing ${start + 1}-${start + pageItems.length} of ${total} (${
+          messages.length
+        } total)`
+        currentPage.textContent = `${page} / ${pages}`
+
+        // attach row listeners
+        document
+          .querySelectorAll('.openBtn')
+          .forEach(btn => btn.addEventListener('click', e => openDrawer(parseInt(btn.dataset.id))))
+        document
+          .querySelectorAll('.delBtn')
+          .forEach(btn =>
+            btn.addEventListener('click', e => deleteMessage(parseInt(btn.dataset.id)))
+          )
+        document
+          .querySelectorAll('.rowCheck')
+          .forEach(cb => cb.addEventListener('change', updateCheckAllState))
+
+        checkAll.checked =
+          document.querySelectorAll('.rowCheck:checked').length ===
+            document.querySelectorAll('.rowCheck').length &&
+          document.querySelectorAll('.rowCheck').length > 0
+      }
+
+      function initials(name) {
+        return name
+          .split(' ')
+          .map(s => s[0] || '')
+          .slice(0, 2)
+          .join('')
+          .toUpperCase()
+      }
+      function escapeHtml(s) {
+        return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      }
+      function capitalize(s) {
+        return s.charAt(0).toUpperCase() + s.slice(1)
+      }
+      function badgeClass(status) {
+        if (status === 'new') return 'bg-indigo-700/30 text-indigo-200'
+        if (status === 'read') return 'bg-emerald-700/20 text-emerald-200'
+        if (status === 'unread') return 'bg-yellow-700/20 text-yellow-200'
+        return 'bg-slate-700/20 text-slate-200'
+      }
+
+      // Drawer
+      function openDrawer(id) {
+        const m = messages.find(x => x.id === id)
+        if (!m) return
+        selectedId = id
+        drawer.classList.remove('hidden')
+        drawerEmpty.classList.add('hidden')
+        drawerSender.textContent = m.name
+        drawerMeta.textContent = `${m.email} • ${m.date}`
+        drawerMessage.textContent = m.message
+        markToggle.textContent = m.status === 'read' ? 'Mark Unread' : 'Mark Read'
+
+        // if new -> mark as read automatically (optional) — here we'll mark 'unread' -> 'read' when opened
+        if (m.status === 'new' || m.status === 'unread') {
+          m.status = 'read'
+          render()
+        }
+      }
+
+      markToggle.addEventListener('click', () => {
+        if (!selectedId) return
+        const m = messages.find(x => x.id === selectedId)
+        m.status = m.status === 'read' ? 'unread' : 'read'
+        render()
+        // update drawer button text
+        markToggle.textContent = m.status === 'read' ? 'Mark Unread' : 'Mark Read'
+      })
+
+      deleteBtn.addEventListener('click', () => {
+        if (!selectedId) return
+        if (!confirm('Delete this message?')) return
+        messages = messages.filter(m => m.id !== selectedId)
+        selectedId = null
+        drawer.classList.add('hidden')
+        drawerEmpty.classList.remove('hidden')
+        render()
+      })
+
+      function deleteMessage(id) {
+        if (!confirm('Delete this message?')) return
+        messages = messages.filter(m => m.id !== id)
+        if (selectedId === id) {
+          selectedId = null
+          drawer.classList.add('hidden')
+          drawerEmpty.classList.remove('hidden')
+        }
+        render()
+      }
+
+      // Bulk
+      bulkMark.addEventListener('click', () => {
+        const checked = Array.from(document.querySelectorAll('.rowCheck:checked')).map(cb =>
+          parseInt(cb.dataset.id)
+        )
+        if (!checked.length) return alert('Select at least one message')
+        messages.forEach(m => {
+          if (checked.includes(m.id)) m.status = 'read'
+        })
+        render()
+      })
+      bulkDelete.addEventListener('click', () => {
+        const checked = Array.from(document.querySelectorAll('.rowCheck:checked')).map(cb =>
+          parseInt(cb.dataset.id)
+        )
+        if (!checked.length) return alert('Select at least one message')
+        if (!confirm('Delete selected messages?')) return
+        messages = messages.filter(m => !checked.includes(m.id))
+        render()
+      })
+
+      // Select all
+      checkAll.addEventListener('change', () => {
+        document.querySelectorAll('.rowCheck').forEach(cb => (cb.checked = checkAll.checked))
+      })
+      function updateCheckAllState() {
+        const total = document.querySelectorAll('.rowCheck').length
+        const checked = document.querySelectorAll('.rowCheck:checked').length
+        checkAll.indeterminate = checked > 0 && checked < total
+        checkAll.checked = checked === total && total > 0
+      }
+
+      // Search & filter
+      globalSearch.addEventListener('input', () => {
+        page = 1
+        render()
+      })
+      filterStatus.addEventListener('change', () => {
+        page = 1
+        render()
+      })
+
+      // Pagination
+      prevPage.addEventListener('click', () => {
+        if (page > 1) {
+          page--
+          render()
+        }
+      })
+      nextPage.addEventListener('click', () => {
+        page++
+        render()
+      })
+
+      // Helpers
+      function findMaxId() {
+        return messages.length ? Math.max(...messages.map(m => m.id)) : 0
+      }
+
+      // Initial render
+      render()
+
+      // Expose a small API to integrate with backend
+      window.dashboardAPI = {
+        addMessage(msg) {
+          // msg: {name,email,subject,message,date,status}
+          const nextId = findMaxId() + 1
+          messages.unshift({ id: nextId, ...msg })
+          render()
+        },
+        replaceAll(newMessages) {
+          messages = structuredClone(newMessages)
+          render()
+        },
+      }
+    </script>
+  </body>
+</html>

@@ -3,6 +3,8 @@ import { IoChevronDown } from 'react-icons/io5'
 import { motion, AnimatePresence } from 'framer-motion'
 import BorderedButton from '../../../components/BorderedButton'
 import GardientButton from '../../../components/GardientButton'
+import { useSelector } from 'react-redux'
+import PricingFaqSkeleton from './PriceSkeleton'
 
 // ===== Animation Variants =====
 const sectionVariants = {
@@ -42,6 +44,10 @@ const buttonVariants = {
 
 const PricingPlan = () => {
   const [activeIndex, setActiveIndex] = useState(null)
+  const { plans, isLoading: isPlanLoading } = useSelector(state => state.plan)
+  const { FAQs, isLoading: isFAQLoading } = useSelector(state => state.FAQ)
+  const isPageReady = isFAQLoading || isPlanLoading
+  console.log(plans)
 
   const pricePlan = [
     {
@@ -106,6 +112,8 @@ const PricingPlan = () => {
     setActiveIndex(activeIndex === index ? null : index)
   }
 
+  if (isPageReady) return <PricingFaqSkeleton />
+
   return (
     <motion.div
       initial="hidden"
@@ -128,7 +136,7 @@ const PricingPlan = () => {
               variants={containerVariants}
               className="md:mt-[1.5vw] sm:mt-[2.5vw] xs:mt-[3.5vw] grid md:grid-cols-3 sm:grid-cols-2 xs:grid-cols-1 md:gap-[1.5vw] sm:gap-[2.5vw] xs:gap-[3.5vw]"
             >
-              {pricePlan.map((item, idx) => (
+              {plans?.map((item, idx) => (
                 <motion.div
                   key={idx}
                   variants={cardVariants}
@@ -141,24 +149,26 @@ const PricingPlan = () => {
                   className="md:p-[0.2vw] sm:p-[0.4vw] xs:p-[0.8vw] md:rounded-[0.8vw] sm:rounded-[1.3vw] xs:rounded-[1.8vw] gradient-button"
                 >
                   <div className="w-full h-full md:p-[1.5vw] sm:p-[2vw] xs:p-[2.5vw] bg-theme-dark md:rounded-[0.8vw] sm:rounded-[1.3vw] xs:rounded-[1.8vw] flex flex-col md:gap-[0.5vw] sm:gap-[1vw] xs:gap-[1.5vw]">
-                    <h2 className="md:text-[1.5vw] sm:text-[2.5vw] xs:text-[4.5vw] font-fira-code font-semibold">
-                      {item.title} <span className="gradient-text">{item.tag}</span>
+                    <h2 className="md:text-[1.5vw] sm:text-[2.5vw] xs:text-[4.5vw] font-fira-code font-semibold capitalize">
+                      {item?.planName}
+                      {/* <span className="gradient-text">{item.tag}</span> */}
                     </h2>
                     <h3 className="md:text-[2.5vw] sm:text-[3.5vw] xs:text-[5.5vw] font-bold text-theme-cyan pb-1">
-                      {item.price}/{item.duration}
+                      {item?.price}
+                      {item?.currency}/{item?.billingCycle}
                     </h3>
                     <p className="md:text-[1.15vw] sm:text-[2.15vw] xs:text-[4.15vw] text-gray-400 md:pb-[1vw] sm:pb-[1.5vw] xs:pb-[2vw]">
-                      {item.caption}
+                      {item?.shortDesc}
                     </p>
 
                     <div className="w-full h-full flex flex-col justify-between">
                       <ul className="w-full flex flex-col md:text-[1.2vw] sm:text-[2.2vw] xs:text-[4.2vw] text-gray-300 list-tick">
-                        {item.availPoinst.map((pt, i) => (
+                        {item?.featurePoints?.map((pt, i) => (
                           <li
                             key={i}
                             className="relative md:pl-[2vw] sm:pl-[3vw] xs:pl-[4vw] md:mb-[1vw] sm:mb-[2vw] xs:mb-[3vw]"
                           >
-                            {pt}
+                            {pt?.name}
                           </li>
                         ))}
                       </ul>
@@ -190,7 +200,7 @@ const PricingPlan = () => {
               variants={containerVariants}
               className="md:max-w-[60%] h-full mx-auto md:mt-[2.5vw] sm:mt-[3.5vw] xs:mt-[4.5vw] flex flex-col gap-[1vw]"
             >
-              {questions.map((item, idx) => (
+              {FAQs?.map((item, idx) => (
                 <motion.div
                   key={idx}
                   variants={cardVariants}
@@ -208,7 +218,7 @@ const PricingPlan = () => {
                   >
                     <div className="w-full flex items-center justify-between">
                       <h2 className="md:text-[1.5vw] sm:text-[2.5vw] xs:text-[4.5vw] font-semibold">
-                        {item.question}
+                        {item?.question}
                       </h2>
                       <motion.span
                         animate={{ rotate: activeIndex === idx ? 180 : 0 }}
@@ -229,7 +239,7 @@ const PricingPlan = () => {
                           transition={{ duration: 0.4, ease: 'easeInOut' }}
                         >
                           <p className="md:text-[1.3vw] sm:text-[2.3vw] xs:text-[4.3vw] text-gray-400 md:mt-[1vw] sm:mt-[2vw] xs:mt-[3vw]">
-                            {item.ans}
+                            {item?.answer}
                           </p>
                         </motion.div>
                       )}

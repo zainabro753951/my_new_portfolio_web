@@ -1,16 +1,54 @@
 // DAddProjectPage.jsx
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { motion } from 'motion/react'
-import { FaUpload, FaCode, FaTags, FaFolderOpen, FaLink, FaGlobe } from 'react-icons/fa'
+import { FaUpload, FaCode, FaTags, FaFolderOpen, FaLink, FaGlobe, FaTrashAlt } from 'react-icons/fa'
 import DAddProjectHeader from './components/DAddProjectHeader'
 import { useFieldArray, useForm } from 'react-hook-form'
 import { mutateProject } from '../../../Queries/AddProject'
 import { glassToast } from '../Components/ToastMessage'
+import { useDispatch, useSelector } from 'react-redux'
+import { useParams } from 'react-router-dom'
+import { clearProject, projectFindById } from '../../../features/projectSlice'
+import RichTextEditor from '../Components/RichText'
 
 const fieldBase =
   'w-full bg-gradient-to-r from-white/6 to-white/3 border border-cyan-400/20 focus:border-cyan-300/70 md:rounded-[0.7vw] sm:rounded-[1.2vw] xs:rounded-[1.7vw] outline-none text-white placeholder:text-gray-400 backdrop-blur-xl md:px-[1vw] sm:px-[2vw] xs:px-[3vw] md:py-[1vw] sm:py-[1.5vw] xs:py-[2vw] transition-shadow duration-200 md:text-[1.1vw] sm:text-[2.1vw] xs:text-[3.1vw] focus:ring-theme-cyan/30 focus:ring-3 md:text-[1vw] sm:text-[2vw] xs:text-[3vw]'
 
 const DAddProjectPage = () => {
+  const { id } = useParams()
+  const dispatch = useDispatch()
+  const { project, projects } = useSelector(state => state.projects)
+
+  const [isHeroImageRemoved, setIsHeroImageRemoved] = useState(false)
+  const [heroPreviewSrc, setHeroPreviewSrc] = useState(null)
+  const [ogPreviewSrc, setOgPreviewSrc] = useState(null)
+  const [isOgImageRemoved, setIsOgImageRemoved] = useState(false)
+  const [isGalleryRemoved, setIsGalleryRemoved] = useState(false)
+  const [output, setOutput] = useState(null)
+  const [isProjectContentNull, setisProjectContentNull] = useState(false)
+
+  const defaultValues = {
+    title: '',
+    slug: '',
+    shortDesc: '',
+    repoLink: '',
+    liveDemo: '',
+    category: '',
+    status: 'draft',
+    featured: false,
+    visibility: 'public',
+    estTime: '',
+    seoTitle: '',
+    metaDesc: '',
+    canonicalUrl: '',
+    techStack: [],
+    tag: [],
+    metaKeywords: [],
+    heroImage: null,
+    ogProjectImage: null,
+    gallery: [],
+  }
+
   const {
     register,
     handleSubmit,
@@ -22,40 +60,93 @@ const DAddProjectPage = () => {
     setValue,
     formState: { errors },
   } = useForm({
-    defaultValues: {
-      techStack: [], // initial empty array
-      tag: [],
-      metaKeywords: [],
-      heroImage: null,
-      ogProjectImage: null,
-      gallery: [],
-    },
+    defaultValues,
   })
+
+  // Fetch project by ID or clear if adding
+  useEffect(() => {
+    if (id && projects.length > 0) {
+      dispatch(projectFindById(Number(id)))
+    } else {
+      dispatch(clearProject())
+      reset(defaultValues) // reset to defaults when switching to Add mode
+      setHeroPreviewSrc(null)
+      setOgPreviewSrc(null)
+      setOutput(null)
+    }
+  }, [id, projects, dispatch])
+
+  // 🔹 Update form when project actually changes
+  useEffect(() => {
+    if (id && project && project.id === Number(id)) {
+      // Only populate when correct project is found
+      reset({
+        title: project.title || '',
+        slug: project.slug || '',
+        shortDesc: project.shortDesc || '',
+        repoLink: project.repoLink || '',
+        liveDemo: project.liveDemo || '',
+        category: project.category || '',
+        status: project.status || 'draft',
+        featured: project.featured || false,
+        visibility: project.visibility || 'public',
+        estTime: project.estTime || '',
+        seoTitle: project.seoTitle || '',
+        metaDesc: project.metaDesc || '',
+        canonicalUrl: project.canonicalUrl || '',
+        techStack: project.techStack || [],
+        tag: project.tag || [],
+        metaKeywords: project.metaKeywords || [],
+        heroImage: null,
+        ogProjectImage: null,
+        gallery: [],
+      })
+      setOutput(project?.content || null)
+      setHeroPreviewSrc(project?.heroImage?.url || null)
+      setOgPreviewSrc(project?.ogProjectImage?.url || null)
+    }
+  }, [id, project, reset])
+
+  const isSlugEdited = useRef(false)
 
   const seoTitle = watch('seoTitle', '')
   const metaDesc = watch('metaDesc', '')
-  const shortDesc = watch('shortDesc', '')
   const title = watch('title', '')
-  const isSlugEdited = useRef(false) // track user manual edits
-
-  // Watch for image preview
   const heroImage = watch('heroImage')
   const gallery = watch('gallery')
   const ogProjectImage = watch('ogProjectImage')
 
-  // counters limits
+  useEffect(() => {
+    // 🔹 Handle Hero Image Preview
+    if (heroImage && heroImage[0]) {
+      setHeroPreviewSrc(URL.createObjectURL(heroImage[0]))
+    } else if (project?.heroImage?.url) {
+      setHeroPreviewSrc(project.heroImage.url)
+    } else {
+      setHeroPreviewSrc(null)
+    }
+
+    // 🔹 Handle OG Project Image Preview
+    if (ogProjectImage && ogProjectImage[0]) {
+      setOgPreviewSrc(URL.createObjectURL(ogProjectImage[0]))
+    } else if (project?.ogProjectImage?.url) {
+      setOgPreviewSrc(project.ogProjectImage.url)
+    } else {
+      setOgPreviewSrc(null)
+    }
+
+    // 🔹 Cleanup: revoke object URLs to prevent memory leaks
+    return () => {
+      if (heroImage && heroImage[0]) URL.revokeObjectURL(heroImage[0])
+      if (ogProjectImage && ogProjectImage[0]) URL.revokeObjectURL(ogProjectImage[0])
+    }
+  }, [heroImage, ogProjectImage, project])
+
   const SEO_TITLE_LIMIT = 60
   const META_DESC_LIMIT = 160
   const SHORT_DESC_LIMIT = 200
 
-  // ✅ Auto-update slug whenever title changes (only if not edited manually)
-  useEffect(() => {
-    if (!isSlugEdited.current && title.trim() !== '') {
-      setValue('slug', generateSlug(title))
-    }
-  }, [title, setValue])
-
-  // Tech Stack
+  // --- Field arrays
   const {
     fields: techFields,
     append: appendTech,
@@ -64,7 +155,6 @@ const DAddProjectPage = () => {
     control,
     name: 'techStack',
   })
-
   const {
     fields: tagFields,
     append: appendTag,
@@ -73,7 +163,6 @@ const DAddProjectPage = () => {
     control,
     name: 'tag',
   })
-
   const {
     fields: metaKeywordsFields,
     append: appendMetaKeywords,
@@ -83,45 +172,33 @@ const DAddProjectPage = () => {
     name: 'metaKeywords',
   })
 
-  // helper: slugify
-  const generateSlug = text => {
-    return text
+  // --- Slug helper
+  const generateSlug = text =>
+    text
       .toLowerCase()
       .trim()
       .replace(/[^a-z0-9\s-]/g, ' ')
       .replace(/\s+/g, '-')
       .replace(/-+/g, '-')
-  }
 
-  // chips handlers
+  // --- Auto-update slug
+  useEffect(() => {
+    if (!isSlugEdited.current && title.trim() !== '') {
+      setValue('slug', generateSlug(title))
+    }
+  }, [title, setValue])
+
+  // --- Chips handlers
   const addTech = e => {
     e.preventDefault()
     const input = e.target.form.querySelector('#techInput')
     const value = input.value.trim()
-
-    // --- Clear old error
     clearErrors('techStack')
-
-    // --- Validation checks
-    if (!value) {
-      setError('techStack', { type: 'required', message: 'Tech is required' })
-      return
-    }
-
-    if (value.length < 2) {
-      setError('techStack', {
-        type: 'minLength',
-        message: 'Tech must be at least 2 characters',
-      })
-      return
-    }
-
-    const isDuplicate = techFields.some(t => t.name.toLowerCase() === value.toLowerCase())
-    if (isDuplicate) {
-      setError('techStack', { type: 'duplicate', message: 'This tech already exists' })
-      return
-    }
-
+    if (!value) return setError('techStack', { type: 'required', message: 'Tech is required' })
+    if (value.length < 2)
+      return setError('techStack', { type: 'minLength', message: 'Tech must be at least 2 chars' })
+    if (techFields.some(t => t.name.toLowerCase() === value.toLowerCase()))
+      return setError('techStack', { type: 'duplicate', message: 'This tech already exists' })
     appendTech({ name: value })
     input.value = ''
   }
@@ -130,28 +207,12 @@ const DAddProjectPage = () => {
     e.preventDefault()
     const input = e.target.form.querySelector('#tagInput')
     const value = input.value.trim()
-
-    // --- Clear old error
     clearErrors('tag')
-
-    // --- Validation checks
-    if (!value) {
-      setError('tag', { type: 'required', message: 'Tag is required' })
-      return
-    }
-
-    if (value.length < 2) {
-      setError('tag', { type: 'minLength', message: 'Tag must be at least 2 characters' })
-      return
-    }
-
-    const isDuplicate = tagFields.some(t => t.name.toLowerCase() === value.toLowerCase())
-    if (isDuplicate) {
-      setError('tag', { type: 'duplicate', message: 'This tag already exists' })
-      return
-    }
-
-    // --- If valid, add tag
+    if (!value) return setError('tag', { type: 'required', message: 'Tag is required' })
+    if (value.length < 2)
+      return setError('tag', { type: 'minLength', message: 'Tag must be at least 2 chars' })
+    if (tagFields.some(t => t.name.toLowerCase() === value.toLowerCase()))
+      return setError('tag', { type: 'duplicate', message: 'This tag already exists' })
     appendTag({ name: value })
     input.value = ''
   }
@@ -160,40 +221,21 @@ const DAddProjectPage = () => {
     e.preventDefault()
     const input = e.target.form.querySelector('#metaKeywordInput')
     const value = input.value.trim()
-
-    // --- Clear old error
     clearErrors('metaKeywords')
-
-    // --- Validation checks
-    if (!value) {
-      setError('metaKeywords', { type: 'required', message: 'Meta Keywords is required' })
-      return
-    }
-
-    if (value.length < 2) {
-      setError('metaKeywords', {
-        type: 'minLength',
-        message: 'Meta keywords must be at least 2 characters',
+    if (!value)
+      return setError('metaKeywords', { type: 'required', message: 'Meta keyword required' })
+    if (value.length < 2)
+      return setError('metaKeywords', { type: 'minLength', message: 'Meta keyword min 2 chars' })
+    if (metaKeywordsFields.some(t => t.name.toLowerCase() === value.toLowerCase()))
+      return setError('metaKeywords', {
+        type: 'duplicate',
+        message: 'This meta keyword already exists',
       })
-      return
-    }
-
-    const isDuplicate = metaKeywordsFields.some(t => t.name.toLowerCase() === value.toLowerCase())
-    if (isDuplicate) {
-      setError('metaKeywords', { type: 'duplicate', message: 'This meta keyword already exists' })
-      return
-    }
-
     appendMetaKeywords({ name: value })
     input.value = ''
   }
 
-  // framer variants
-  const fadeIn = {
-    hidden: { y: 20, opacity: 0 },
-    show: { y: 0, opacity: 1, transition: { duration: 0.45 } },
-  }
-
+  // --- Mutation
   const { mutate, isSuccess, isPending, isError, data, error } = mutateProject()
 
   const onSubmit = data => {
@@ -201,16 +243,31 @@ const DAddProjectPage = () => {
     formData.append('title', data.title)
     formData.append('slug', data.slug)
     formData.append('shortDesc', data.shortDesc)
-    formData.append('longDesc', data.longDesc)
+    formData.append('content', output)
     formData.append('repoLink', data.repoLink)
     formData.append('liveDemo', data.liveDemo)
-    formData.append('heroImage', data.heroImage[0])
-    for (let i = 0; i < data.gallery.length; i++) {
-      formData.append('gallery', data.gallery[i])
-    }
-    formData.append('techStack', data.techStack)
-    formData.append('tag', data.tag)
-    formData.append('metaKeywords', data.metaKeywords)
+
+    // 🔹 Optional files
+    formData.append('heroImage', data?.heroImage?.[0] || '')
+    formData.append('ogProjectImage', data?.ogProjectImage?.[0] || '')
+    Array.from(data?.gallery).forEach(file => {
+      formData.append('gallery', file || '')
+    })
+
+    // 🔹 Existing URLs (stringify arrays for safety)
+    formData.append('isHeroImageRemoved', JSON.stringify(isHeroImageRemoved))
+    formData.append('isOgImageRemoved', JSON.stringify(isOgImageRemoved))
+    formData.append('isGalleryRemoved', JSON.stringify(isGalleryRemoved))
+
+    formData.append('heroImageOBJ', JSON.stringify(project?.heroImage))
+
+    formData.append('ogProjectImageOBJ', JSON.stringify(project?.ogProjectImage))
+    formData.append('galleryOBJS', JSON.stringify(project?.gallery || []))
+
+    // 🔹 Other fields
+    formData.append('techStack', JSON.stringify(data.techStack))
+    formData.append('tag', JSON.stringify(data.tag))
+    formData.append('metaKeywords', JSON.stringify(data.metaKeywords))
     formData.append('category', data.category)
     formData.append('status', data.status)
     formData.append('featured', data.featured)
@@ -219,23 +276,28 @@ const DAddProjectPage = () => {
     formData.append('seoTitle', data.seoTitle)
     formData.append('metaDesc', data.metaDesc)
     formData.append('canonicalUrl', data.canonicalUrl)
-    formData.append('ogProjectImage', data.ogProjectImage[0])
+    formData.append('projectId', project?.id || '')
 
-    mutate(formData)
+    for (const data of formData) {
+      console.log(data)
+    }
+
+    mutate(formData) // ✅ send raw FormData
   }
 
   useEffect(() => {
-    if (isSuccess) {
-      console.log(data)
-
-      glassToast(data?.message, 'success')
-    }
+    if (isSuccess) glassToast(data?.message, 'success')
     if (isError) {
-      console.log(error?.response?.data)
-
+      console.log(error)
       glassToast(error?.response?.data?.message, 'error')
     }
   }, [isSuccess, isError])
+
+  // framer variants
+  const fadeIn = {
+    hidden: { y: 20, opacity: 0 },
+    show: { y: 0, opacity: 1, transition: { duration: 0.45 } },
+  }
 
   return (
     <>
@@ -243,6 +305,7 @@ const DAddProjectPage = () => {
         initial="hidden"
         animate="show"
         onSubmit={handleSubmit(onSubmit)}
+        encType="multipart/form-data"
         variants={{ show: { transition: { staggerChildren: 0.06 } } }}
         className="md:p-[1.5vw] sm:p-[2.5vw] xs:p-[3.5vw]"
       >
@@ -311,56 +374,31 @@ const DAddProjectPage = () => {
               </label>
             </div>
 
-            {/* Short + long description */}
             <label className="flex flex-col">
-              <div className="w-full flex items-center justify-between">
-                <span className="md:text-[1.1vw] sm:text-[2.1vw] xs:text-[4.1vw] text-gray-300 md:mb-[0.7vw] sm:mb-[1.7vw] xs:mb-[2.7vw]">
-                  Short description
-                </span>
-                <span className="md:text-[0.9vw] sm:text-[1.9vw] xs:text-[3.9vw] text-gray-300">{`${shortDesc.length}/${SHORT_DESC_LIMIT}`}</span>
-              </div>
-              <input
+              <span className="md:text-[1.1vw] sm:text-[2.1vw] xs:text-[4.1vw] text-gray-300 md:mb-[0.7vw] sm:mb-[1.7vw] xs:mb-[2.7vw]">
+                Short description
+              </span>
+              <textarea
                 {...register('shortDesc', {
                   required: 'Short description is required',
                   minLength: {
-                    value: 10,
-                    message: `Short description must be between 10 and ${SHORT_DESC_LIMIT} characters`,
+                    value: 50,
+                    message: 'Short description must be at least 50 characters long',
                   },
                   maxLength: {
                     value: SHORT_DESC_LIMIT,
-                    message: `Short description must be between 10 and ${SHORT_DESC_LIMIT} characters`,
-                  },
-                })}
-                maxLength={SHORT_DESC_LIMIT} // stops extra typing
-                placeholder="Short summary (shown in listings)"
-                className={fieldBase}
-              />
-              {errors.shortDesc && (
-                <span className="md:text-[0.9vw] sm:text-[1.9vw] xs:text-[3.9vw] text-red-500">
-                  {errors.shortDesc.message}
-                </span>
-              )}
-            </label>
-
-            <label className="flex flex-col">
-              <span className="md:text-[1.1vw] sm:text-[2.1vw] xs:text-[4.1vw] text-gray-300 md:mb-[0.7vw] sm:mb-[1.7vw] xs:mb-[2.7vw]">
-                Long description
-              </span>
-              <textarea
-                {...register('longDesc', {
-                  required: 'Long description is required',
-                  minLength: {
-                    value: 50,
-                    message: 'Long description must be at least 50 characters long',
+                    message: `Short description cannot exceed ${SHORT_DESC_LIMIT} characters`,
                   },
                 })}
                 rows={8}
                 placeholder="Full project description, case study, details, process..."
                 className={fieldBase + ' resize-y'}
+                // Optional: HTML-level enforcement
+                maxLength={SHORT_DESC_LIMIT}
               />
-              {errors.longDesc && (
+              {errors.shortDesc && (
                 <span className="md:text-[0.9vw] sm:text-[1.9vw] xs:text-[3.9vw] text-red-500">
-                  {errors.longDesc?.message}
+                  {errors.shortDesc?.message}
                 </span>
               )}
             </label>
@@ -408,6 +446,8 @@ const DAddProjectPage = () => {
                 </div>
               </label>
             </div>
+            <RichTextEditor setOutput={setOutput} output={output} />
+
             {/* Hero image */}
             <div className="bg-white/4 backdrop-blur-md border border-white/10 md:rounded-[1.5vw] sm:rounded-[2vw] xs:rounded-[2.5vw] md:p-[1.2vw] sm:p-[2.2vw] xs:p-[3.2vw]">
               <div className="flex flex-wrap items-center justify-between md:mb-[1vw] sm:mb-[2vw] xs:mb-[3vw]">
@@ -422,9 +462,11 @@ const DAddProjectPage = () => {
               <div className="flex flex-col md:gap-[1vw] sm:gap-[2vw] xs:gap-[3vw]">
                 {/* Preview */}
                 <div className="relative md:h-[15vw] sm:h-[25vw] xs:h-[35vw] md:rounded-[0.7vw] sm:rounded-[1.2vw] xs:rounded-[1.7vw] overflow-hidden bg-gradient-to-br from-white/6 to-white/3 border border-white/8 flex items-center justify-center">
-                  {heroImage && heroImage[0] ? (
+                  {heroPreviewSrc ? (
                     <img
-                      src={URL.createObjectURL(heroImage[0])}
+                      src={
+                        heroPreviewSrc // fallback if nothing available
+                      }
                       alt="hero preview"
                       className="object-cover w-full h-full"
                     />
@@ -445,6 +487,10 @@ const DAddProjectPage = () => {
                     whileTap={{ scale: 0.98 }}
                     transition={{ type: 'spring', stiffness: 200 }}
                     htmlFor="heroImage"
+                    onClick={() => {
+                      // agar pehle clear kiya gaya tha, ab nayi image add ho rahi hai
+                      if (isHeroImageRemoved) setIsHeroImageRemoved(false)
+                    }}
                     className="cursor-pointer md:py-[0.7vw] sm:py-[1.2vw] xs:py-[1.7vw] md:px-[2.5vw] sm:px-[3.5vw] xs:px-[4.5vw] bg-gradient-to-r from-cyan-500 to-blue-500 text-cyan-100 border border-cyan-500 shadow-[0_0_15px_rgba(34,211,238,0.25)] md:rounded-[0.7vw] sm:rounded-[1.2vw] xs:rounded-[1.7vw] md:text-[1vw] sm:text-[2vw] xs:text-[4vw] w-full text-center"
                   >
                     Upload
@@ -455,9 +501,19 @@ const DAddProjectPage = () => {
                     whileHover={{ scale: 1.05 }}
                     transition={{ type: 'spring', stiffness: 200 }}
                     type="button"
-                    onClick={() => setValue('heroImage', null)}
-                    className="md:py-[0.7vw] sm:py-[1.2vw] xs:py-[1.7vw] md:px-[2.5vw] sm:px-[3.5vw] xs:px-[4.5vw] md:rounded-[0.7vw] sm:rounded-[1.2vw] xs:rounded-[1.7vw] bg-white/6 border border-white/8 text-white hover:bg-white/8 md:text-[1vw] sm:text-[2vw] xs:text-[4vw]"
+                    onClick={() => {
+                      setHeroPreviewSrc(null) // reset preview to fallback
+                      setValue('heroImage', null) // clear the file input
+                      setIsHeroImageRemoved(true)
+                    }}
+                    className="flex items-center justify-center gap-2
+             md:py-[0.7vw] sm:py-[1.2vw] xs:py-[1.7vw]
+             md:px-[2.5vw] sm:px-[3.5vw] xs:px-[4.5vw]
+             md:rounded-[0.7vw] sm:rounded-[1.2vw] xs:rounded-[1.7vw]
+             bg-white/6 border border-white/8 text-white
+             hover:bg-white/8 md:text-[1vw] sm:text-[2vw] xs:text-[4vw]"
                   >
+                    <FaTrashAlt className="md:text-[1vw] sm:text-[2vw] xs:text-[4vw]" />
                     Remove
                   </motion.button>
                 </div>
@@ -466,28 +522,11 @@ const DAddProjectPage = () => {
                 <input
                   id="heroImage"
                   type="file"
+                  name="heroImage"
                   accept="image/*"
-                  {...register('heroImage', {
-                    required: 'Hero image is required',
-                    validate: {
-                      fileSize: files =>
-                        (files && files[0]?.size <= 2 * 1024 * 1024) ||
-                        'File size must be under 2MB',
-                      fileType: files =>
-                        (files &&
-                          ['image/jpeg', 'image/png', 'image/webp'].includes(files[0]?.type)) ||
-                        'Only JPG, PNG, or WEBP allowed',
-                    },
-                  })}
+                  {...register('heroImage')}
                   className="hidden"
                 />
-
-                {/* Validation Error */}
-                {errors.heroImage && (
-                  <p className="text-red-400 md:text-[0.9vw] sm:text-[1.8vw] xs:text-[3.6vw] mt-[0.6vw]">
-                    {errors.heroImage.message}
-                  </p>
-                )}
               </div>
             </div>
 
@@ -506,19 +545,34 @@ const DAddProjectPage = () => {
               <div className="flex flex-col md:gap-[1vw] sm:gap-[2vw] xs:gap-[3vw]">
                 {/* ✅ Preview Grid */}
                 <div className="grid grid-cols-4 md:gap-[0.9vw] sm:gap-[1.4vw] xs:gap-[1.9vw]">
-                  {gallery && gallery.length > 0 ? (
-                    Array.from(gallery).map((file, index) => (
-                      <img
-                        key={index}
-                        src={URL.createObjectURL(file)}
-                        alt={`gallery-${index}`}
-                        className="w-full md:h-[5vw] sm:h-[10vw] xs:h-[15vw] object-cover md:rounded-[0.7vw] sm:rounded-[1.2vw] xs:rounded-[1.7vw]"
-                      />
-                    ))
+                  {/* ✅ Agar gallery cleared nahi hui */}
+                  {!gallery || gallery.length === 0 ? (
+                    !isGalleryRemoved && project?.gallery?.length > 0 ? (
+                      project.gallery.map((item, idx) => (
+                        <img
+                          key={`db-${idx}`}
+                          src={item?.url}
+                          alt={`gallery-db-${idx}`}
+                          className="w-full md:h-[5vw] sm:h-[10vw] xs:h-[15vw] object-cover md:rounded-[0.7vw] sm:rounded-[1.2vw] xs:rounded-[1.7vw]"
+                        />
+                      ))
+                    ) : (
+                      <div className="col-span-4 text-gray-400 md:text-[1.1vw] sm:text-[2.1vw] xs:text-[4.1vw] text-center">
+                        No screenshots uploaded
+                      </div>
+                    )
                   ) : (
-                    <div className="col-span-4 text-gray-400 md:text-[1.1vw] sm:text-[2.1vw] xs:text-[4.1vw]">
-                      No screenshots uploaded
-                    </div>
+                    Array.from(gallery).map((file, idx) => {
+                      const src = file instanceof File ? URL.createObjectURL(file) : file
+                      return (
+                        <img
+                          key={`file-${idx}`}
+                          src={src}
+                          alt={`gallery-upload-${idx}`}
+                          className="w-full md:h-[5vw] sm:h-[10vw] xs:h-[15vw] object-cover md:rounded-[0.7vw] sm:rounded-[1.2vw] xs:rounded-[1.7vw]"
+                        />
+                      )
+                    })
                   )}
                 </div>
 
@@ -530,6 +584,10 @@ const DAddProjectPage = () => {
                     transition={{ type: 'spring', stiffness: 200 }}
                     htmlFor="gallery"
                     className="cursor-pointer md:py-[0.7vw] sm:py-[1.2vw] xs:py-[1.7vw] md:px-[2.5vw] sm:px-[3.5vw] xs:px-[4.5vw] bg-white/6 border border-white/8 text-white hover:bg-white/8 md:text-[1vw] sm:text-[2vw] xs:text-[4vw] w-full text-center rounded-[0.7vw]"
+                    onClick={() => {
+                      // agar pehle clear kiya gaya tha, ab nayi image add ho rahi hai
+                      if (isGalleryRemoved) setIsGalleryRemoved(false)
+                    }}
                   >
                     Add Image
                   </motion.label>
@@ -539,7 +597,10 @@ const DAddProjectPage = () => {
                     whileHover={{ scale: 1.05 }}
                     transition={{ type: 'spring', stiffness: 200 }}
                     type="button"
-                    onClick={() => setValue('gallery', [])}
+                    onClick={() => {
+                      setValue('gallery', [])
+                      setIsGalleryRemoved(true)
+                    }}
                     className="md:py-[0.7vw] sm:py-[1.2vw] xs:py-[1.7vw] md:px-[2.5vw] sm:px-[3.5vw] xs:px-[4.5vw] bg-white/6 border border-white/8 text-white hover:bg-white/8 md:text-[1vw] sm:text-[2vw] xs:text-[4vw] rounded-[0.7vw]"
                   >
                     Clear
@@ -551,21 +612,9 @@ const DAddProjectPage = () => {
                   id="gallery"
                   type="file"
                   accept="image/*"
+                  name="gallery"
                   multiple
-                  {...register('gallery', {
-                    required: 'Please upload at least one image',
-                    validate: {
-                      maxFiles: files =>
-                        (files?.length ?? 0) <= 12 || 'You can only upload up to 12 images',
-                      fileType: files =>
-                        Array.from(files).every(f =>
-                          ['image/jpeg', 'image/png', 'image/webp'].includes(f.type)
-                        ) || 'Only JPG, PNG, or WEBP images allowed',
-                      fileSize: files =>
-                        Array.from(files).every(f => f.size <= 2 * 1024 * 1024) ||
-                        'Each file must be under 2MB',
-                    },
-                  })}
+                  {...register('gallery')}
                   className="hidden"
                 />
 
@@ -732,6 +781,28 @@ const DAddProjectPage = () => {
                     </option>
                   </select>
                   {errors.category && (
+                    <span className="md:text-[0.9vw] sm:text-[1.9vw] xs:text-[3.9vw] text-red-500">
+                      This field is required
+                    </span>
+                  )}
+                </label>
+
+                <label className="flex flex-col">
+                  <span className="md:text-[1.1vw] sm:text-[2.1vw] xs:text-[4.1vw] text-gray-300 md:mb-[0.7vw] sm:mb-[1.7vw] xs:mb-[2.7vw]">
+                    Status
+                  </span>
+                  <select {...register('status', { required: true })} className={fieldBase}>
+                    <option className="bg-black" value={''}>
+                      -- Select Status --
+                    </option>
+                    <option className="bg-black" value={'published'}>
+                      Published
+                    </option>
+                    <option className="bg-black" value={'draft'}>
+                      Draft
+                    </option>
+                  </select>
+                  {errors.status && (
                     <span className="md:text-[0.9vw] sm:text-[1.9vw] xs:text-[3.9vw] text-red-500">
                       This field is required
                     </span>
@@ -958,9 +1029,9 @@ const DAddProjectPage = () => {
                     </small>
                   </div>
                   <div className="relative md:h-[15vw] sm:h-[25vw] xs:h-[35vw] md:rounded-[0.7vw] sm:rounded-[1.2vw] xs:rounded-[1.7vw] overflow-hidden bg-white/6 border border-white/8 md:mb-[0.7vw] sm:mb-[1.7vw] xs:mb-[2.7vw] flex items-center justify-center">
-                    {ogProjectImage && ogProjectImage[0] ? (
+                    {ogPreviewSrc ? (
                       <img
-                        src={URL.createObjectURL(ogProjectImage[0])}
+                        src={ogPreviewSrc}
                         alt="OG preview"
                         className="object-cover w-full h-full"
                       />
@@ -980,6 +1051,10 @@ const DAddProjectPage = () => {
                       whileHover={{ scale: 1.05 }}
                       transition={{ type: 'spring', stiffness: 200 }}
                       htmlFor="ogProjectImage"
+                      onClick={() => {
+                        // agar pehle clear kiya gaya tha, ab nayi image add ho rahi hai
+                        if (isOgImageRemoved) setIsOgImageRemoved(false)
+                      }}
                       className="md:py-[1vw] sm:py-[1.5vw] xs:py-[2vw] md:px-[1.5vw] sm:px-[2.5vw] xs:px-[3.5vw] md:rounded-[0.7vw] sm:rounded-[1.2vw] xs:rounded-[1.7vw] bg-white/6 border border-white/8 text-white hover:bg-white/8  md:text-[1vw] sm:text-[2vw] xs:text-[4vw] "
                     >
                       Upload Og
@@ -989,7 +1064,11 @@ const DAddProjectPage = () => {
                       type="button"
                       whileHover={{ scale: 1.05 }}
                       transition={{ type: 'spring', stiffness: 200 }}
-                      onClick={() => setValue('ogProjectImage', null)}
+                      onClick={() => {
+                        setValue('ogProjectImage', null)
+                        setOgPreviewSrc(null)
+                        setIsOgImageRemoved(true)
+                      }}
                       className="md:py-[1vw] sm:py-[1.5vw] xs:py-[2vw] md:px-[1.5vw] sm:px-[2.5vw] xs:px-[3.5vw] md:rounded-[0.7vw] sm:rounded-[1.2vw] xs:rounded-[1.7vw] bg-white/6 border border-white/8 text-white hover:bg-white/8  md:text-[1vw] sm:text-[2vw] xs:text-[4vw] "
                     >
                       Remove Og
@@ -1001,26 +1080,9 @@ const DAddProjectPage = () => {
                     type="file"
                     accept="image/*"
                     className="hidden"
-                    {...register('ogProjectImage', {
-                      required: 'Og image is required',
-                      validate: {
-                        fileSize: files =>
-                          (files && files[0]?.size <= 2 * 1024 * 1024) ||
-                          'File size must be under 2MB',
-                        fileType: files =>
-                          (files &&
-                            ['image/jpeg', 'image/png', 'image/webp'].includes(files[0]?.type)) ||
-                          'Only JPG, PNG, or WEBP allowed',
-                      },
-                    })}
+                    {...register('ogProjectImage')}
                   />
                 </div>
-                {/* Validation Error */}
-                {errors.ogProjectImage && (
-                  <p className="text-red-400 md:text-[0.9vw] sm:text-[1.8vw] xs:text-[3.6vw]">
-                    {errors.ogProjectImage.message}
-                  </p>
-                )}
               </div>
             </div>
           </motion.aside>

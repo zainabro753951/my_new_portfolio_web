@@ -106,7 +106,9 @@ export const superAdminLogin = async (req, res) => {
   }
 
   try {
-    const { email, password, isRemember } = req.body
+    const { email, password, rememberMe } = req.body
+
+    console.log(rememberMe)
 
     // 2️⃣ Email Check (await required here)
     const [rows] = await pool.query('SELECT * FROM admins WHERE email = ?', [email])
@@ -134,7 +136,7 @@ export const superAdminLogin = async (req, res) => {
 
     const token = await generateTokenAndSaveCookie(
       { id: admin.id, email: admin.email },
-      isRemember,
+      rememberMe,
       res
     )
 
@@ -151,6 +153,8 @@ export const superAdminLogin = async (req, res) => {
       },
     })
   } catch (error) {
+    console.log(error)
+
     return res.status(500).json({
       success: false,
       errorCode: 'SERVER_ERROR',

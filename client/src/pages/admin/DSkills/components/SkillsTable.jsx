@@ -1,17 +1,28 @@
-import React from 'react'
 import { FaEdit, FaTrashAlt } from 'react-icons/fa'
+import { useSelector } from 'react-redux'
+import { Link } from 'react-router-dom'
+import { useDeleteEntryContext } from '../../../../context/DeleteEntry'
+import { useEffect } from 'react'
 
 const SkillsTable = () => {
-  const skills = [
-    {
-      name: 'React',
-      proficiency: 'Advance',
-    },
-    {
-      name: 'JavaScripts',
-      proficiency: 'Medium',
-    },
-  ]
+  const { skills } = useSelector(state => state.skills)
+  const { setRoute, setIsOpen, setQueryKey } = useDeleteEntryContext()
+
+  // ✅ Whenever something deletes successfully, call refetch()
+  useEffect(() => {
+    setQueryKey('skills') // used for DeleteConfirm context
+  }, [setQueryKey])
+
+  // const skills = [
+  //   {
+  //     name: 'React',
+  //     proficiency: 'Advance',
+  //   },
+  //   {
+  //     name: 'JavaScripts',
+  //     proficiency: 'Medium',
+  //   },
+  // ]
 
   const actionButtonClass = `md:w-[2vw] md:h-[2vw] sm:w-[4.5vw] sm:h-[4.5vw] xs:w-[7vw] xs:h-[7vw] md:rounded-[0.5vw] sm:rounded-[1vw] xs:rounded-[1.5vw] flex items-center justify-center bg-gradient-to-r border  transition-all duration-300`
   return (
@@ -47,22 +58,28 @@ const SkillsTable = () => {
                   transition-all duration-300 ease-in-out"
               >
                 <div className="md:py-[1.5vw] sm:py-[2.5vw] xs:py-[3.5vw] text-center font-medium">
-                  {item.name}
+                  {item.skillName}
                 </div>
                 <div className="md:py-[1.5vw] sm:py-[2.5vw] xs:py-[3.5vw] text-center text-cyan-200/90">
                   {item.proficiency}
                 </div>
                 <div className="md:py-[1.5vw] sm:py-[2.5vw] xs:py-[3.5vw] flex justify-center md:gap-[1vw] sm:gap-[2vw] xs:gap-[3vw]">
-                  <button
+                  <Link
+                    to={`/admin/skills/${item?.id}`}
                     className={
                       actionButtonClass +
                       'from-purple-600/30 to-indigo-600/30 border border-purple-500/40 text-purple-200 hover:from-purple-500/50 hover:to-indigo-500/40 shadow-[0_0_10px_rgba(147,51,234,0.3)]'
                     }
                   >
                     <FaEdit className="md:text-[0.9vw] sm:text-[1.9vw] xs:text-[3.9vw]" />
-                  </button>
+                  </Link>
 
                   <button
+                    onClick={() => {
+                      setIsOpen(true)
+                      setRoute(`/skill/delete/${item?.id}`)
+                      setQueryKey('skills')
+                    }}
                     className={
                       actionButtonClass +
                       'from-cyan-600/30 to-blue-600/30 border border-cyan-500/40 text-cyan-200 hover:from-cyan-500/50 hover:to-blue-500/40 shadow-[0_0_10px_rgba(34,211,238,0.3)]'

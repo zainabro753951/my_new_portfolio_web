@@ -1,6 +1,8 @@
 import React from 'react'
 import { motion } from 'framer-motion'
 import { FaCircle } from 'react-icons/fa6'
+import { useSelector } from 'react-redux'
+import ExperienceTimelineSkeleton from './ExperienceTimeLineSkeleton'
 
 const fadeUp = {
   hidden: { opacity: 0, y: 100, rotateX: -10 },
@@ -19,6 +21,9 @@ const fadeUp = {
 }
 
 const ExperienceTimeline = () => {
+  const { experiences, isLoading } = useSelector(state => state.experience)
+  console.log(experiences)
+
   const exp = [
     {
       title: 'Senior Developer, TechCorp',
@@ -36,6 +41,8 @@ const ExperienceTimeline = () => {
       desc: 'Created responsive UI components with React and GSAP for motion-rich websites.',
     },
   ]
+
+  if (isLoading) return <ExperienceTimelineSkeleton />
 
   return (
     <motion.div
@@ -61,43 +68,47 @@ const ExperienceTimeline = () => {
       ></motion.div>
 
       <div className="flex flex-col xs:items-center md:items-start md:gap-[2vw] sm:gap-[3vw] xs:gap-[4vw]">
-        {exp.map((item, idx) => (
-          <motion.div
-            key={idx}
-            variants={fadeUp}
-            whileHover={{
-              y: -8,
-              scale: 1.02,
-              boxShadow: '0 0 10px #06b5d46c, 0 0 20px #06b5d463, 0 0 30px #06b5d442',
-            }}
-            transition={{ duration: 0.3 }}
-            className={`relative  md:p-[0.2vw] sm:p-[0.4vw] xs:p-[0.8vw] md:rounded-[0.8vw] sm:rounded-[1.3vw] xs:rounded-[1.8vw] md:w-[45%] sm:w-[80%] xs:w-[90%] gradient-button ${
-              idx % 2 === 0
-                ? 'md:self-start md:ml-0 sm:ml-[10%]'
-                : 'md:self-end md:mr-0 sm:mr-[10%]'
-            }`}
-          >
-            {/* Dot on line */}
-            <span
-              className={`absolute md:block xs:hidden top-[50%] w-[1vw] h-[1vw] sm:w-[1.5vw] sm:h-[1.5vw] xs:w-[2vw] xs:h-[2vw] bg-theme-cyan rounded-full transform -translate-y-1/2 ${
+        {experiences?.map((item, idx) => {
+          const startedAt = new Date(item?.startedAt).toLocaleDateString()
+          const endDate = new Date(item?.endDate).toLocaleDateString()
+          return (
+            <motion.div
+              key={idx}
+              variants={fadeUp}
+              whileHover={{
+                y: -8,
+                scale: 1.02,
+                boxShadow: '0 0 10px #06b5d46c, 0 0 20px #06b5d463, 0 0 30px #06b5d442',
+              }}
+              transition={{ duration: 0.3 }}
+              className={`relative  md:p-[0.2vw] sm:p-[0.4vw] xs:p-[0.8vw] md:rounded-[0.8vw] sm:rounded-[1.3vw] xs:rounded-[1.8vw] md:w-[45%] sm:w-[80%] xs:w-[90%] gradient-button ${
                 idx % 2 === 0
-                  ? 'md:right-[-0.7vw] sm:right-[-1vw]'
-                  : 'md:left-[-0.7vw] sm:left-[-1vw]'
+                  ? 'md:self-start md:ml-0 sm:ml-[10%]'
+                  : 'md:self-end md:mr-0 sm:mr-[10%]'
               }`}
-            ></span>
-            <div className="w-full h-full md:p-[1.5vw] sm:p-[2vw] xs:p-[2.5vw] bg-theme-dark md:rounded-[0.8vw] sm:rounded-[1.3vw] xs:rounded-[1.8vw] flex flex-col md:gap-[1.5vw] sm:gap-[2vw] xs:gap-[2.5vw]">
-              <h2 className="md:text-[1.6vw] sm:text-[2.6vw] xs:text-[4.6vw] md:leading-[2.1vw] sm:leading-[3.1vw] xs:leading-[5.1vw] font-semibold font-fira-code text-theme-cyan">
-                {item.title}
-              </h2>
-              <p className="md:text-[1.3vw] sm:text-[2.3vw] xs:text-[4.3vw] text-gray-400">
-                {item.duration}
-              </p>
-              <p className="md:text-[1.3vw] sm:text-[2.3vw] xs:text-[4.3vw] text-gray-400">
-                {item.desc}
-              </p>
-            </div>
-          </motion.div>
-        ))}
+            >
+              {/* Dot on line */}
+              <span
+                className={`absolute md:block xs:hidden top-[50%] w-[1vw] h-[1vw] sm:w-[1.5vw] sm:h-[1.5vw] xs:w-[2vw] xs:h-[2vw] bg-theme-cyan rounded-full transform -translate-y-1/2 ${
+                  idx % 2 === 0
+                    ? 'md:right-[-0.7vw] sm:right-[-1vw]'
+                    : 'md:left-[-0.7vw] sm:left-[-1vw]'
+                }`}
+              ></span>
+              <div className="w-full h-full md:p-[1.5vw] sm:p-[2vw] xs:p-[2.5vw] bg-theme-dark md:rounded-[0.8vw] sm:rounded-[1.3vw] xs:rounded-[1.8vw] flex flex-col md:gap-[1.5vw] sm:gap-[2vw] xs:gap-[2.5vw]">
+                <h2 className="md:text-[1.6vw] sm:text-[2.6vw] xs:text-[4.6vw] md:leading-[2.1vw] sm:leading-[3.1vw] xs:leading-[5.1vw] font-semibold font-fira-code text-theme-cyan">
+                  {item?.position}
+                </h2>
+                <p className="md:text-[1.3vw] sm:text-[2.3vw] xs:text-[4.3vw] text-gray-400">
+                  {startedAt} - {endDate}
+                </p>
+                <p className="md:text-[1.3vw] sm:text-[2.3vw] xs:text-[4.3vw] text-gray-400">
+                  {item.description}
+                </p>
+              </div>
+            </motion.div>
+          )
+        })}
       </div>
     </motion.div>
   )

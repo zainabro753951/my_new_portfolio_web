@@ -5,11 +5,19 @@ import FormField from '../../Components/FormField'
 import { useAddAbout } from '../../../../Queries/AddAbout'
 import { glassToast } from '../../Components/ToastMessage'
 import { ThreeCircles } from 'react-loader-spinner'
+import TextareaField from '../../Components/TextAreaField'
+import { useSelector } from 'react-redux'
+import { useState } from 'react'
 
 // const fieldBase =
 //   'w-full bg-gradient-to-r from-white/6 to-white/3 border border-cyan-400/20 focus:border-cyan-300/70 md:rounded-[0.7vw] sm:rounded-[1.2vw] xs:rounded-[1.7vw] outline-none text-white placeholder:text-gray-400 backdrop-blur-xl md:px-[1vw] sm:px-[2vw] xs:px-[3vw] md:py-[1vw] sm:py-[1.5vw] xs:py-[2vw] transition-shadow duration-200 md:text-[1.1vw] sm:text-[2.1vw] xs:text-[3.1vw] focus:ring-theme-cyan/30 focus:ring-3'
 
 const AboutForm = () => {
+  const { data: about } = useSelector(state => state.about)
+  const [aboutPreview, setAboutPreview] = useState(null)
+  const [isUpdate, setIsUpdate] = useState(false)
+  const [isAboutImageRemoved, setIsAboutImageRemoved] = useState(false)
+
   const {
     register,
     handleSubmit,
@@ -17,33 +25,74 @@ const AboutForm = () => {
     watch,
     setValue,
     formState: { errors },
-  } = useForm({})
+  } = useForm({
+    defaultValues: {
+      fullName: '',
+      shortRole: '',
+      shortDesc: '',
+      longDesc: '',
+      aboutImage: null,
+    },
+  })
 
   const aboutImage = watch('aboutImage')
   const SHORT_DESC_LIMIT = 200
 
-  const { mutate, isPending, isError, isSuccess, data, error } = useAddAbout()
+  // 🧠 Prefill when data comes from Redux
+  useEffect(() => {
+    if (about && Object.keys(about).length > 0) {
+      reset({
+        fullName: about?.fullName || '',
+        shortRole: about?.shortRole || '',
+        shortDesc: about?.shortDesc || '',
+        longDesc: about?.longDesc || '',
+      })
 
-  const onSubmit = data => {
-    const formData = new FormData()
-    formData.append('fullName', data.fullName)
-    formData.append('shortRole', data.shortRole)
-    formData.append('shortDesc', data.shortDesc)
-    formData.append('longDesc', data.longDesc)
-    formData.append('aboutImage', data.aboutImage[0])
-    mutate(formData)
-  }
+      setAboutPreview(about?.aboutImage?.url || null)
+      setIsUpdate(true)
+    }
+  }, [about, reset])
 
   useEffect(() => {
+    if (aboutImage && aboutImage?.[0]) {
+      setAboutPreview(URL.createObjectURL(aboutImage[0]))
+    }
+  }, [aboutImage])
+
+  const { mutate, isPending, isError, isSuccess, data, error } = useAddAbout()
+
+  // ✅ Safe Form Submit
+  const onSubmit = formData => {
+    const fd = new FormData()
+
+    fd.append('isUpdate', isUpdate ? 'true' : 'false')
+    fd.append('fullName', formData.fullName)
+    fd.append('shortRole', formData.shortRole)
+    fd.append('shortDesc', formData.shortDesc)
+    fd.append('longDesc', formData.longDesc)
+    fd.append('isAboutImageRemoved', JSON.stringify(isAboutImageRemoved))
+
+    // 🖼 Handle image safely
+    if (formData.aboutImage && formData.aboutImage[0]) {
+      fd.append('aboutImage', formData.aboutImage[0])
+    }
+
+    // 🧩 Safe stringify existing image object (if any)
+    fd.append('aboutImageOBJ', about?.aboutImage ? JSON.stringify(about.aboutImage) : 'null')
+
+    mutate(fd)
+  }
+
+  // 🧃 Toast Feedback
+  useEffect(() => {
     if (isSuccess) {
-      console.log(data)
       glassToast(data?.message, 'success')
     }
     if (isError) {
-      console.log(error?.response?.data)
-      glassToast(error?.response?.data?.message, 'error')
+      glassToast(error?.response?.data?.message || 'Something went wrong', 'error')
     }
   }, [isSuccess, isError])
+  console.log(aboutPreview)
 
   const fadeIn = {
     hidden: { y: 20, opacity: 0 },
@@ -74,13 +123,11 @@ const AboutForm = () => {
                  border border-white/20 backdrop-blur-2xl shadow-[0_0_20px_rgba(34,211,238,0.2)]
        w-full "
           >
-            <div className="md:w-[15vw] md:h-[15vw] sm:w-[30vw] sm:h-[30vw] xs:w-[45vw] xs:h-[45vw] rounded-full border border-theme-cyan overflow-hidden">
-              {aboutImage && aboutImage[0] && (
-                <img
-                  src={URL.createObjectURL(aboutImage[0])}
-                  className="w-full h-full object-cover"
-                  alt=""
-                />
+            <div className="md:w-[15vw] md:h-[15vw] sm:w-[30vw] sm:h-[30vw] xs:w-[45vw] xs:h-[45vw] rounded-full border-2 border-theme-cyan overflow-hidden flex items-center justify-center md:text-[1.1vw] sm:text-[2.1vw] xs:text-[4.1vw] text-gray-400">
+              {aboutPreview ? (
+                <img src={aboutPreview} className="w-full h-full object-cover" alt="" />
+              ) : (
+                <p className="md:w-[80%] text-center">No Profile Image Uploaded</p>
               )}
             </div>
             <div className="flex items-center md:gap-[1.5vw] sm:gap-[2.5vw] xs:gap-[3.5vw]">
@@ -97,18 +144,8 @@ const AboutForm = () => {
                   id="aboutImage"
                   name="aboutImage"
                   accept="image/*"
-                  {...register('aboutImage', {
-                    required: 'Hero image is required',
-                    validate: {
-                      fileSize: files =>
-                        (files && files[0]?.size <= 2 * 1024 * 1024) ||
-                        'File size must be under 2MB',
-                      fileType: files =>
-                        (files &&
-                          ['image/jpeg', 'image/png', 'image/webp'].includes(files[0]?.type)) ||
-                        'Only JPG, PNG, or WEBP allowed',
-                    },
-                  })}
+                  onClick={() => setIsAboutImageRemoved(false)}
+                  {...register('aboutImage')}
                   hidden
                 />
                 {/* Validation Error */}
@@ -119,7 +156,11 @@ const AboutForm = () => {
                 )}
               </div>
               <button
-                onClick={() => setValue('aboutImage', null)}
+                onClick={() => {
+                  setValue('aboutImage', null)
+                  setAboutPreview(null)
+                  setIsAboutImageRemoved(true)
+                }}
                 type="button"
                 className="md:py-[0.7vw] sm:py-[1.2vw] xs:py-[1.7vw] md:px-[1.5vw] sm:px-[2.5vw] xs:px-[3.5vw] md:rounded-[0.7vw] sm:rounded-[1.2vw] xs:rounded-[1.7vw] bg-white/6 border border-white/8 text-white hover:bg-white/8 transition md:text-[1vw] sm:text-[2vw] xs:text-[4vw]"
               >
@@ -162,53 +203,24 @@ const AboutForm = () => {
                 placeholder="Short title / role"
               />
             </div>
-            <div className="w-full flex flex-col gap-0.5">
-              <div className="w-full bg-gradient-to-r from-white/6 to-white/3 border border-cyan-400/20 focus:border-cyan-300/70 md:rounded-[0.7vw] sm:rounded-[1.2vw] xs:rounded-[1.7vw]  text-white placeholder:text-gray-400 backdrop-blur-xl  transition-shadow duration-200 md:text-[1.1vw] sm:text-[2.1vw] xs:text-[3.1vw] focus:ring-theme-cyan/30 focus:ring-3">
-                <textarea
-                  className="md:px-[1vw] sm:px-[2vw] xs:px-[3vw] md:py-[1vw] sm:py-[1.5vw] xs:py-[2vw] outline-none w-full h-full"
-                  rows="4"
-                  {...register('shortDesc', {
-                    required: 'Short description is required',
-                    minLength: {
-                      value: 10,
-                      message: `Short description must be between 10 and ${SHORT_DESC_LIMIT} characters`,
-                    },
-                    maxLength: {
-                      value: SHORT_DESC_LIMIT,
-                      message: `Short description must be between 10 and ${SHORT_DESC_LIMIT} characters`,
-                    },
-                  })}
-                  maxLength={SHORT_DESC_LIMIT}
-                  placeholder="short description"
-                ></textarea>
-              </div>
-              {errors.shortDesc && (
-                <span className="md:text-[0.9vw] sm:text-[1.9vw] xs:text-[3.9vw] text-red-500">
-                  {errors.shortDesc.message}
-                </span>
-              )}
-            </div>
-            <div className="w-full flex flex-col gap-0.5">
-              <div className="w-full bg-gradient-to-r from-white/6 to-white/3 border border-cyan-400/20 focus:border-cyan-300/70 md:rounded-[0.7vw] sm:rounded-[1.2vw] xs:rounded-[1.7vw]  text-white placeholder:text-gray-400 backdrop-blur-xl  transition-shadow duration-200 md:text-[1.1vw] sm:text-[2.1vw] xs:text-[3.1vw] focus:ring-theme-cyan/30 focus:ring-3">
-                <textarea
-                  className="md:px-[1vw] sm:px-[2vw] xs:px-[3vw] md:py-[1vw] sm:py-[1.5vw] xs:py-[2vw] outline-none w-full h-full"
-                  rows="7"
-                  {...register('longDesc', {
-                    required: 'Long description is required',
-                    minLength: {
-                      value: 50,
-                      message: 'Long description must be at least 50 characters long',
-                    },
-                  })}
-                  placeholder="long description"
-                ></textarea>
-              </div>
-              {errors.longDesc && (
-                <span className="md:text-[0.9vw] sm:text-[1.9vw] xs:text-[3.9vw] text-red-500">
-                  {errors.longDesc.message}
-                </span>
-              )}
-            </div>
+
+            <TextareaField
+              label="Short Description"
+              name={`shortDesc`}
+              register={register}
+              errors={errors}
+              placeholder="Describe your coursework, achievements, or focus areas..."
+            />
+
+            <TextareaField
+              label="Long Description"
+              name={`longDesc`}
+              register={register}
+              errors={errors}
+              rows={10}
+              placeholder="Describe your coursework, achievements, or focus areas..."
+            />
+
             <div className="w-full flex flex-col">
               <motion.button
                 whileHover={{ scale: 1.05 }}

@@ -5,19 +5,20 @@ import { loginAdmin, logoutAdmin } from '../features/authSlice'
 
 const AuthLoader = ({ children }) => {
   const dispatch = useDispatch()
-  const { data, isError, isSuccess, isLoading } = checkAuth()
+  const { data, isError, isSuccess, isLoading, isFetching } = checkAuth()
+
+  const isVerifying = isLoading || isFetching
 
   useEffect(() => {
     if (isError) {
       dispatch(logoutAdmin())
-    }
-
-    if (isSuccess && data?.admin) {
+    } else if (isSuccess && data?.admin) {
       dispatch(loginAdmin({ isAuth: true, ...data.admin }))
     }
   }, [isError, isSuccess, data, dispatch])
 
-  if (isLoading) {
+  // 🚫 Don't render routes until verification is done
+  if (isVerifying) {
     return (
       <div className="w-full h-screen flex items-center justify-center bg-black text-white">
         <h1 className="text-xl font-semibold animate-pulse">Verifying session...</h1>
@@ -25,7 +26,6 @@ const AuthLoader = ({ children }) => {
     )
   }
 
-  // ✅ Just render children — don't redirect or replace route
   return children
 }
 

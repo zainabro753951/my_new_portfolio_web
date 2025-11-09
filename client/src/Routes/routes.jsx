@@ -1,5 +1,6 @@
 import AboutPage from '../pages/About/AboutPage'
 import HomePage from '../pages/home/HomePage'
+import ProjectPage from '../pages/Projects/components/ProjectPage'
 import ProjectsPage from '../pages/Projects/ProjectsPage'
 import ReviewsPage from '../pages/Reviews/ReviewsPage'
 import ServicesPage from '../pages/Services/ServicesPage'
@@ -20,6 +21,10 @@ const allRoutes = [
   {
     element: <ProjectsPage />,
     path: '/projects',
+  },
+  {
+    element: <ProjectPage />,
+    path: '/projects/:projectSlug/:id',
   },
   {
     element: <ReviewsPage />,

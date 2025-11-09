@@ -1,24 +1,27 @@
 import React from 'react'
 import { FaFolderOpen, FaCheckCircle, FaRegClock } from 'react-icons/fa'
+import { useSelector } from 'react-redux'
 
 const ProjectStatsCards = () => {
+  const { projectCounts } = useSelector(state => state.projects)
+
   const stats = [
     {
       icon: <FaFolderOpen className="text-cyan-400" />,
       label: 'Total Projects',
-      value: 12,
+      value: projectCounts?.allProjects,
       color: 'from-cyan-500/20 to-blue-500/20',
     },
     {
       icon: <FaCheckCircle className="text-emerald-400" />,
       label: 'Published',
-      value: 8,
+      value: projectCounts?.publishedProjects,
       color: 'from-emerald-500/20 to-green-500/20',
     },
     {
       icon: <FaRegClock className="text-yellow-400" />,
       label: 'Drafts',
-      value: 4,
+      value: projectCounts?.draftProjects,
       color: 'from-yellow-500/20 to-orange-500/20',
     },
   ]

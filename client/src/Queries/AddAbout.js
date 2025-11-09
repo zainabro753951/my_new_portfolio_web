@@ -1,21 +1,17 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import axios from 'axios'
+import api from '../api/axios'
+import { queryClient } from '../queryClient'
 
 const addAboutFunc = async data => {
-  const backendUrl = import.meta.env.VITE_BACKEND_URL
-  const response = await axios.post(`${backendUrl}/about/add`, data, {
-    withCredentials: true,
-  })
+  const response = await api.post(`/about/add`, data)
   return response.data
 }
 
 export const useAddAbout = () => {
-  let queryClient = useQueryClient()
   return useMutation({
     mutationFn: addAboutFunc,
-
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['projects'] })
+      queryClient.invalidateQueries({ queryKey: ['about'] })
     },
   })
 }
