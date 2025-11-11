@@ -3,7 +3,7 @@ import { motion } from 'framer-motion'
 import { FaCode, FaDatabase, FaUserLock } from 'react-icons/fa6'
 import { FiCpu } from 'react-icons/fi'
 import { useSelector } from 'react-redux'
-import { useGetServiceIcon } from '../../../Utils/getServiceIcon'
+import { useGetServiceIcon } from '../../../Utils/GetServiceIcon'
 import ServiceSkeleton from '../../../components/ServiceSkeleton'
 
 // 🎬 Animation Variants (Highly optimized & reusable)
