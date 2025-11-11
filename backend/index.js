@@ -114,6 +114,16 @@ app.use(faqsRoute)
 /* ----------------------------------------
    🩵 8. 404 + Error Handling
 ---------------------------------------- */
+if (isProduction) {
+  const clientBuildPath = path.join(__dirname, 'client', 'dist')
+  app.use(express.static(clientBuildPath))
+
+  // SPA fallback route (Express 5 compatible)
+  app.get(/.*/, (req, res) => {
+    res.sendFile(path.join(clientBuildPath, 'index.html'))
+  })
+}
+
 app.use((req, res) => {
   res.status(404).json({
     success: false,
