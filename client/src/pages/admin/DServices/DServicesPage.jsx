@@ -1,5 +1,5 @@
 import React from 'react'
-import ServiceForm from './Components/serviceForm'
+import ServiceForm from './Components/ServiceForm'
 import ServiceTable from './Components/ServiceTable'
 
 const DServicesPage = () => {
