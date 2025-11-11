@@ -12,18 +12,19 @@ export const addSiteSettings = async (req, res) => {
   if (typeof deletedSeoPageIds === 'string') deletedSeoPageIds = safeParse(deletedSeoPageIds)
 
   const imagesKey = []
+  console.log(req.files['siteInfo[favicon]']?.[0])
 
+  // ✅ Upload images (if new files provided)
+  const [logoImage, favicon] = await Promise.all([
+    req.files?.['siteInfo[logoImage]']?.[0]
+      ? uploadToS3(req.files['siteInfo[logoImage]'][0], 'logoImage')
+      : Promise.resolve(null),
+    req.files['siteInfo[favicon]']?.[0]
+      ? uploadToS3(req.files['siteInfo[favicon]'][0], 'favicon')
+      : Promise.resolve(null),
+  ])
+  console.log(favicon?.url)
   try {
-    // ✅ Upload images (if new files provided)
-    const [logoImage, favicon] = await Promise.all([
-      req.files?.['siteInfo[logoImage]']?.[0]
-        ? uploadToS3(req.files['siteInfo[logoImage]'][0], 'logoImage')
-        : Promise.resolve(null),
-      req.files?.['siteInfo[favicon]']?.[0]
-        ? uploadToS3(req.files['siteInfo[favicon]'][0], 'favicon')
-        : Promise.resolve(null),
-    ])
-
     // ✅ Merge new uploads with old values
     const logoImageObj = {
       key: logoImage?.key || logoImageOBJ?.key || null,
@@ -69,7 +70,7 @@ export const addSiteSettings = async (req, res) => {
       }
 
       if (req.files?.['siteInfo[favicon]']) {
-        await deleteFromS3(faviconImageObj?.key).catch(e =>
+        await deleteFromS3(faviconOBJ?.key).catch(e =>
           console.log('Failed to delete old favicon ' + e)
         )
       }

@@ -1,31 +1,63 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { MdEmail, MdPhone } from 'react-icons/md'
 import { FaFacebook, FaGithub, FaInstagram, FaLinkedin, FaUpwork } from 'react-icons/fa6'
 import { motion } from 'framer-motion'
-import { useCursorHoverContext } from '../../../context/CursorHover'
-import GardientButton from '../../../components/GardientButton'
+import { useCursorHoverContext } from '../context/CursorHover'
+import GardientButton from '../components/GardientButton'
 import { useForm } from 'react-hook-form'
-import { useSendMessage } from '../../../Queries/SendMessage'
+import { useSendMessage } from '../Queries/SendMessage'
 import { ToastContainer, toast } from 'react-toastify'
-import { useSelector } from 'react-redux'
-import ContactSectionSkeleton from '../../../components/ContactSectionSkeleton'
+import { useDispatch, useSelector } from 'react-redux'
+import ContactSectionSkeleton from '../components/ContactSectionSkeleton'
+import { useLocation, useParams } from 'react-router-dom'
+import { planFindById, clearPlan } from '../features/planSlice'
+import Plan from './Plan'
+import { capitalize } from '../Utils/Utils'
 
 const Contact = () => {
+  const { planId } = useParams()
+  const dispatch = useDispatch()
+  const location = useLocation()
   const { onCursorEnter, onCursorLeave } = useCursorHoverContext()
   const { contact_info, isLoading } = useSelector(state => state.siteSettings)
-  console.log(contact_info)
+  const { plan, plans } = useSelector(state => state.plan)
 
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset,
+    setValue,
   } = useForm()
+
+  useEffect(() => {
+    if (planId) {
+      dispatch(planFindById(Number(planId)))
+    } else {
+      dispatch(clearPlan())
+    }
+  }, [planId, dispatch, plans])
+
+  useEffect(() => {
+    if (plan && Number(planId)) {
+      const autoMessage = `Hello,
+
+I am very interested in your "${capitalize(
+        plan?.planName
+      )}" plan. I would like to proceed with this plan and would appreciate it if you could provide me with the next steps to get started.
+
+Looking forward to your guidance and support. Thank you!`
+
+      setValue('message', autoMessage)
+    } else {
+      setValue('message', '')
+    }
+  }, [plan, planId, setValue])
 
   const { mutate, isPending, isSuccess, isError, data, error } = useSendMessage()
 
   const onSubmit = data => {
-    mutate(data)
+    mutate({ planId, ...data })
   }
 
   useEffect(() => {
@@ -38,6 +70,7 @@ const Contact = () => {
         pauseOnHover: true,
         theme: 'dark',
       })
+      reset()
     }
     if (isError) {
       const errMsg = error?.response?.data?.message || 'Something went wrong! Please try again.'
@@ -176,7 +209,7 @@ const Contact = () => {
               </h4>
               <div className="flex items-center gap-[1.5vw]">
                 {contactIcons?.map(({ Icon, url }, i) => (
-                  <a
+                  <motion.a
                     href={url}
                     target="_blank"
                     key={i}
@@ -187,7 +220,7 @@ const Contact = () => {
                     className="md:text-[2.5vw] sm:text-[3.5vw] xs:text-[5.5vw] text-gray-300 hover:text-theme-cyan cursor-pointer"
                   >
                     <Icon />
-                  </a>
+                  </motion.a>
                 ))}
               </div>
             </motion.div>
@@ -269,7 +302,7 @@ const Contact = () => {
                 <motion.div variants={fadeInUp} custom={2}>
                   <label className="text-gray-400">Your Message</label>
                   <textarea
-                    rows={4}
+                    rows={8}
                     {...register('message', {
                       required: 'Message is required',
                       minLength: {
@@ -277,13 +310,19 @@ const Contact = () => {
                         message: 'Message should be at least 10 characters long',
                       },
                     })}
-                    className="w-full p-3 mt-2 bg-gray-800 border border-gray-600 rounded-md focus:ring-4 ring-theme-cyan/40 focus:border-theme-cyan transition-all duration-200 resize-none outline-none"
+                    className="w-full p-3 mt-2 bg-gray-800 border border-gray-600 rounded-md focus:ring-4 ring-theme-cyan/40 focus:border-theme-cyan transition-all duration-200 resize-none outline-none md:text-[1.2vw] sm:text-[2.2vw] xs:text-[4.2vw]"
                     placeholder="Write your message here"
                   ></textarea>
                   {errors.message && (
                     <p className="text-red-400 text-sm mt-1">{errors.message.message}</p>
                   )}
                 </motion.div>
+
+                <div className="w-full h-full relative">
+                  {Object.keys(plan).length > 0 && (
+                    <Plan item={plan} isInContact={location?.pathname === `/contact/${planId}`} />
+                  )}
+                </div>
 
                 {/* Submit Button */}
                 <motion.div variants={fadeInUp} custom={3}>

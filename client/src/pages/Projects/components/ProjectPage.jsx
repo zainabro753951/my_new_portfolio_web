@@ -6,6 +6,8 @@ import Header from '../../../components/Header'
 import ProjectHero from './ProjectHero'
 import ProjectContent from './ProjectContent'
 import Footer from '../../../components/Footer'
+import NextProject from '../../../components/NextProject'
+import Layout from '../../../components/Layout'
 
 const ProjectPage = () => {
   const { projectSlug, id } = useParams()
@@ -40,14 +42,22 @@ const ProjectPage = () => {
     setProjectData(rest)
     setProjectContent(content)
   }, [project])
+  console.log(projectData)
 
   return (
-    <>
-      <Header />
+    <Layout
+      title={projectData?.seoTitle}
+      canonical={projectData?.canonicalUrl}
+      description={projectData?.metaDesc}
+      keywords={projectData?.metaKeywords?.join(',')}
+      author={'Zain Ul Abbas'}
+      noIndex={true}
+      ogImage={projectData?.ogProjectImage?.url}
+    >
       <ProjectHero isLoading={isLoading || projectLoading} projectData={projectData} />
       <ProjectContent isLoading={isLoading || projectLoading} projectContent={projectContent} />
-      <Footer />
-    </>
+      <NextProject />
+    </Layout>
   )
 }
 

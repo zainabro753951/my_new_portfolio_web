@@ -1,5 +1,4 @@
 export function colorGuess(lang) {
-  console.log(lang)
   const lower = lang?.toLowerCase()
 
   if (lower.includes('javascript') || lower.includes('js')) return '#F7DF1E' // JS
@@ -134,3 +133,5 @@ export function backendSkillFilter(skills) {
     backendSkillNames?.some(skill => skill?.toLowerCase() === userSkill?.toLowerCase())
   )
 }
+
+export const capitalize = str => (str ? str.charAt(0).toUpperCase() + str.slice(1) : '')

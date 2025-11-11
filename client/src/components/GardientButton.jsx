@@ -9,7 +9,7 @@ const GradientButton = ({
   hoverShadow = false,
   hoverOpacity = true,
   type = 'button',
-  onClick, // optional for submit or normal button
+  onClick, // optional for button
 }) => {
   const { onCursorEnter, onCursorLeave } = useCursorHoverContext()
 
@@ -26,18 +26,34 @@ const GradientButton = ({
     transition-all duration-300
     ${hoverOpacity ? 'hover:opacity-90' : ''}
     ${hoverShadow ? 'gradient-button-shadow' : ''}
+    flex justify-center items-center
   `
 
+  if (type === 'submit') {
+    // Render button for form submission
+    return (
+      <button
+        type="submit"
+        onMouseEnter={onCursorEnter}
+        onMouseLeave={onCursorLeave}
+        className={classes}
+      >
+        {text}
+      </button>
+    )
+  }
+
+  // Render Link if type is "button"
   return (
-    <button
-      type={type}
-      onClick={type === 'button' ? onClick : undefined}
+    <Link
+      to={link}
+      onClick={onClick}
       onMouseEnter={onCursorEnter}
       onMouseLeave={onCursorLeave}
       className={classes}
     >
-      {type === 'button' ? <Link to={link}>{text}</Link> : text}
-    </button>
+      {text}
+    </Link>
   )
 }
 

@@ -1,4 +1,5 @@
 import AboutPage from '../pages/About/AboutPage'
+import ContactPage from '../pages/Contact/ContactPage'
 import HomePage from '../pages/home/HomePage'
 import ProjectPage from '../pages/Projects/components/ProjectPage'
 import ProjectsPage from '../pages/Projects/ProjectsPage'
@@ -29,6 +30,14 @@ const allRoutes = [
   {
     element: <ReviewsPage />,
     path: '/reviews',
+  },
+  {
+    element: <ContactPage />,
+    path: '/contact',
+  },
+  {
+    element: <ContactPage />,
+    path: '/contact/:planId',
   },
 ]
 

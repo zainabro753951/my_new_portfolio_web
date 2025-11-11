@@ -11,22 +11,20 @@ export const uploadToS3 = async (file, folder = 'projects') => {
   try {
     if (!file) throw new Error('No file provided for upload')
 
-    const fileExtension = path.extname(file.originalname).toLowerCase()
-    const isImage = ['.jpg', '.jpeg', '.png', '.webp'].includes(fileExtension)
+    const ext = path.extname(file.originalname).toLowerCase()
+    const shouldCompress = ['.jpg', '.jpeg', '.png', '.webp'].includes(ext)
 
-    // 🧠 Compress image if possible
     let fileBuffer = file.buffer
-    if (isImage) {
+    if (shouldCompress) {
       fileBuffer = await sharp(file.buffer)
         .resize({ width: 1500, withoutEnlargement: true })
         .jpeg({ quality: 80 })
         .toBuffer()
     }
 
-    const uniqueName = `${Date.now()}-${Math.random().toString(36).substring(2)}${fileExtension}`
+    const uniqueName = `${Date.now()}-${Math.random().toString(36).slice(2)}${ext}`
     const key = `${folder}/${uniqueName}`
 
-    // 🚀 Multipart upload (auto optimized)
     const upload = new Upload({
       client: s3Client,
       params: {
@@ -34,6 +32,7 @@ export const uploadToS3 = async (file, folder = 'projects') => {
         Key: key,
         Body: fileBuffer,
         ContentType: file.mimetype,
+        // ✅ No ACL here
       },
     })
 

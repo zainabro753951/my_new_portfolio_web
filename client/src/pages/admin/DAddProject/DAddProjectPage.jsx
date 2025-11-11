@@ -446,6 +446,10 @@ const DAddProjectPage = () => {
                 </div>
               </label>
             </div>
+
+            {/* ================================================ */}
+            {/* =============== Rich Text Editor ============== */}
+            {/* ================================================ */}
             <RichTextEditor setOutput={setOutput} output={output} />
 
             {/* Hero image */}

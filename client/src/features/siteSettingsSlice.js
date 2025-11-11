@@ -4,6 +4,7 @@ const initialState = {
   isLoading: false,
   site_info: {},
   seo_pages: [],
+  seo_page: {},
   contact_info: {},
 }
 
@@ -43,12 +44,31 @@ const siteSettingsSlice = createSlice({
       state.contact_info = { ...action.payload }
     },
 
+    findSeoPageBySlug: (state, action) => {
+      const seoPageSlug = action.payload
+      const found = state.seo_pages.find(
+        seo => seo?.pageSlug?.toLowerCase() === seoPageSlug?.toLowerCase()
+      )
+      state.seo_page = found
+    },
+
+    clearSeoPage: state => {
+      state.seo_page = {}
+    },
+
     // ✅ Reset on logout or refresh
     resetSiteSettings: () => initialState,
   },
 })
 
-export const { setSiteSettings, setSiteInfo, setSeoPages, setContactInfo, resetSiteSettings } =
-  siteSettingsSlice.actions
+export const {
+  setSiteSettings,
+  setSiteInfo,
+  setSeoPages,
+  setContactInfo,
+  resetSiteSettings,
+  clearSeoPage,
+  findSeoPageBySlug,
+} = siteSettingsSlice.actions
 
 export default siteSettingsSlice.reducer

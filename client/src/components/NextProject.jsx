@@ -1,6 +1,6 @@
 import React from 'react'
 import { motion } from 'motion/react'
-import GardientButton from '../../../components/GardientButton'
+import GardientButton from './GardientButton'
 
 const NextProject = () => {
   // ✅ Unified and optimized animation variants

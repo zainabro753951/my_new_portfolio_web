@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { motion } from 'framer-motion'
+import { motion } from 'motion/react'
 import { colorGuess } from '../Utils/Utils'
 import GardientButton from './GardientButton'
 import { useSelector } from 'react-redux'
@@ -95,7 +95,6 @@ const FeaturedRepos = () => {
   ]
 
   if (isLoading || !isPageReady) return <FeaturedReposSkeleton />
-  console.log(projects)
 
   return (
     <motion.div

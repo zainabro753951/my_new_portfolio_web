@@ -34,7 +34,7 @@ export const contactMessageValidation = [
 ]
 
 export const sendMessage = async (req, res) => {
-  // 🧩 1. Handle validation errors
+  // 1️⃣ Validate request
   const errors = validationResult(req)
   if (!errors.isEmpty()) {
     return res.status(400).json({
@@ -45,25 +45,45 @@ export const sendMessage = async (req, res) => {
   }
 
   try {
-    // 🧩 2. Extract data
-    const { fullName, email, subject, message } = req.body
+    // 2️⃣ Extract fields
+    const { fullName, email, subject, message, planId } = req.body
+
+    // 3️⃣ Validate optional planId (only if provided)
+    let resolvedPlanId = null
+    if (planId) {
+      const [rows] = await pool.query(`SELECT id FROM plans WHERE id = ?`, [planId])
+      if (rows.length === 0) {
+        return res.status(400).json({
+          success: false,
+          errorCode: 'INVALID_PLAN_ID',
+          message: 'The selected plan does not exist.',
+        })
+      }
+      resolvedPlanId = planId
+    }
+
+    // 4️⃣ IP + User Agent
     const rawIp = req.ip || req.headers['x-forwarded-for'] || null
     const user_agent = req.headers['user-agent'] || null
 
-    // 🧩 3. Hash + anonymize IP
+    // 5️⃣ Hash IP
     const hashedIp = await hashIp(rawIp)
 
-    // 🧩 4. Geo lookup (country + city)
+    // 6️⃣ Geo lookup
     const { country, city } = getGeoLocation(rawIp)
 
-    console.log(`User raw Ip: ${rawIp}`)
+    console.log(`User raw IP: ${rawIp}`)
 
-    // 🧩 5. Insert into DB (safe parameterized query)
+    // 7️⃣ Insert into contact_messages
     const sql = `
-      INSERT INTO contact_messages (full_name, email, subject, message, ip_address, user_agent)
-      VALUES (?, ?, ?, ?, ?, ?)
+      INSERT INTO contact_messages (
+        plan_id, full_name, email, subject, message, ip_address, user_agent
+      )
+      VALUES (?, ?, ?, ?, ?, ?, ?)
     `
+
     const [result] = await pool.query(sql, [
+      resolvedPlanId,
       fullName,
       email,
       subject,
@@ -72,27 +92,37 @@ export const sendMessage = async (req, res) => {
       user_agent,
     ])
 
-    // 6️⃣ Create notification entry
+    const contactMessageId = result.insertId
+
+    // 8️⃣ Insert notification
     const sqlNotification = `
       INSERT INTO notifications (type, title, message, reference_id)
       VALUES (?, ?, ?, ?)
     `
+
+    const notificationMsg = resolvedPlanId
+      ? `${fullName} selected plan #${resolvedPlanId} and sent a message.`
+      : `${fullName} sent you a new contact message.`
+
     await pool.query(sqlNotification, [
       'contact_message',
       'New Contact Message',
-      `${fullName} sent you a new message.`,
-      result.insertId, // reference to contact message ID
+      notificationMsg,
+      contactMessageId,
     ])
 
-    // 🧩 6. Response
-    res.status(200).json({
+    // 9️⃣ Success response
+    return res.status(200).json({
       success: true,
       message: 'Message sent successfully!',
       location: { country, city },
+      referenceId: contactMessageId,
+      planId: resolvedPlanId,
     })
   } catch (error) {
     console.error('SEND_MESSAGE_ERROR:', error)
-    res.status(500).json({
+
+    return res.status(500).json({
       success: false,
       errorCode: 'SERVER_ERROR',
       message: 'Internal Server Error!',
@@ -109,6 +139,7 @@ export const getMessage = async (req, res) => {
     const [messages] = await pool.query(
       `SELECT
         id,
+        plan_id AS planId,
         full_name AS fullName,
         email,
         subject,

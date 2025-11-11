@@ -56,7 +56,7 @@ export default function RichEditor({ output, setOutput }) {
   // ✅ Editor Setup (Clean, Stable, Optimal)
   // -----------------------------------------------------------
   const editor = useEditor({
-    content: '<p>Start typing...</p>',
+    content: output || '<p>Start typing...</p>',
 
     extensions: [
       StarterKit.configure({
@@ -108,10 +108,19 @@ export default function RichEditor({ output, setOutput }) {
     },
   })
 
-  // keep editor instance
+  // Keep editor instance
   useEffect(() => {
     editorRef.current = editor
   }, [editor])
+
+  // Update editor content when `output` changes from backend
+  useEffect(() => {
+    if (editor && output !== editor.getHTML()) {
+      editor.commands.setContent(output, false) // `false` preserves history
+    } else {
+      editor.commands.setContent('<p>Start typing...</p>', false)
+    }
+  }, [output, editor])
 
   // -----------------------------------------------------------
   // ✅ Task list sync — consistent & efficient

@@ -1,15 +1,14 @@
 import React, { useEffect } from 'react'
 import CustomCursor from '../../components/CustomCursor'
 import Header from '../../components/Header'
+import Contact from '../../components/Contact'
 import Footer from '../../components/Footer'
-import Skills from '../../components/Skills'
-import Experience from './components/Experience'
-import Layout from '../../components/Layout'
 import { useLocation } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { clearSeoPage, findSeoPageBySlug } from '../../features/siteSettingsSlice'
+import Layout from '../../components/Layout'
 
-const AboutPage = () => {
+const ContactPage = () => {
   const location = useLocation()
   const dispatch = useDispatch()
   const { seo_pages, seo_page } = useSelector(state => state.siteSettings)
@@ -17,11 +16,20 @@ const AboutPage = () => {
   // Load SEO Page for home
   useEffect(() => {
     if (seo_pages.length > 0) {
-      dispatch(findSeoPageBySlug(location.pathname))
+      // Normalize path
+      let basePath = location.pathname
+
+      // Example: if pathname starts with /contact/ and has an ID, normalize to /contact
+      if (basePath.startsWith('/contact/')) {
+        basePath = '/contact'
+      }
+
+      dispatch(findSeoPageBySlug(basePath))
     } else {
       dispatch(clearSeoPage())
     }
   }, [seo_pages, location.pathname, dispatch])
+
   return (
     <>
       <Layout
@@ -35,11 +43,10 @@ const AboutPage = () => {
         twitterCard={seo_page?.twitterCardType}
       >
         <CustomCursor />
-        <Skills />
-        <Experience />
+        <Contact />
       </Layout>
     </>
   )
 }
 
-export default AboutPage
+export default ContactPage

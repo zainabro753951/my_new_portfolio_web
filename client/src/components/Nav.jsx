@@ -46,7 +46,7 @@ const Nav = ({ flex = false, isMobile = false }) => {
           </NavLink>
         )
       })}
-      <GardientButton sizeY="short" text="Contact" />
+      <GardientButton sizeY="short" text="Contact" link="/contact" />
     </nav>
   )
 }
