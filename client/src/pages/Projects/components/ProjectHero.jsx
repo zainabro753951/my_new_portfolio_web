@@ -137,7 +137,7 @@ const ProjectHero = ({ isLoading, projectData }) => {
 
           <div className="w-full flex md:gap-[1.5vw] sm:gap-[2vw] xs:gap-[3vw]">
             <a
-              href={projectData?.liveLink}
+              href={projectData?.liveDemo}
               target="_blank"
               className="
     group relative inline-block overflow-hidden
@@ -169,7 +169,7 @@ const ProjectHero = ({ isLoading, projectData }) => {
               <span className="relative z-10">Live Demo</span>
             </a>
             <a
-              href={projectData?.liveLink}
+              href={projectData?.repoLink}
               target="_blank"
               className="
     group relative inline-block overflow-hidden

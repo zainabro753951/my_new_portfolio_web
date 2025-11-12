@@ -1,0 +1,12 @@
+Project generator prompt:
+
+(
+
+Acha main chahta hon ke main ab apne aik project ko apne portfolio website per upload kron maine aik website banai thi jis main maine bhut sare pages banaye the and maine us website ke frontend and backend dono hanlde keya tha wo mera client ka project tha us project ka name Intellvid ai tha jo basically image generator video generator and aur bhi bhut sare chezen krta he main react + tailwind css ki madad se bani the
+
+this part is your projects qualitfication
+
+)
+
+ab main chahta hon ke aap in sub ke hissb se aik acha sa formated way main aik mere project ko describe kren and bara sa content bana ker bhego jo ke mere project ke hissab se ho and haan content main SEO optimised keywords and low ratted keywords add krna thek he and meri compny name jaise ke zain code us ko bhi ko real main and content main mix kr ke add krna thek he and aur bhi bhut sare SEO optimization krna jo bhi aapko aati ho bhut hi high level ka content hona chayeye main chahta hon ke content ache formated hon us main headings hon us main lists hon and aur bhi bhut sare chezen hon and is like hon ke main use apne rich text per copy paste kron to wo bhi ache formate main aaye thek he
+

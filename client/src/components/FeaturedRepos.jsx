@@ -94,7 +94,7 @@ const FeaturedRepos = () => {
           const color = colorGuess(item.techStack[0]?.name)
           return (
             <>
-              <Link key={idx} to={`/projects/${item?.slug}/${item?.id}`}>
+              <div key={idx}>
                 <motion.div
                   whileHover={{
                     y: -8,
@@ -111,16 +111,21 @@ const FeaturedRepos = () => {
                       whileHover={{ scale: 1.03 }}
                       transition={{ duration: 0.3, ease: 'easeOut' }}
                     >
-                      <img
-                        src={item?.heroImage?.url || '/imgs/elementor-placeholder-image.png'}
-                        className="w-full h-full object-cover"
-                        alt={item?.title || 'Default Image'}
-                      />
+                      <Link to={`/projects/${item?.slug}/${item?.id}`} className="w-full h-full">
+                        <img
+                          src={item?.heroImage?.url || '/imgs/elementor-placeholder-image.png'}
+                          className="w-full h-full object-cover"
+                          alt={item?.title || 'Default Image'}
+                        />
+                      </Link>
                     </motion.div>
 
-                    <h2 className="md:text-[1.6vw] sm:text-[2.6vw] xs:text-[4.6vw] font-semibold font-fira-code">
+                    <Link
+                      to={`/projects/${item?.slug}/${item?.id}`}
+                      className="md:text-[1.6vw] sm:text-[2.6vw] xs:text-[4.6vw] font-semibold font-fira-code hover:underline"
+                    >
                       {item.title}
-                    </h2>
+                    </Link>
 
                     <p className="md:text-[1.2vw] sm:text-[2.2vw] xs:text-[4.2vw] text-gray-400">
                       {item.shortDesc}
@@ -136,14 +141,14 @@ const FeaturedRepos = () => {
                       </div>
                       <div className="w-full flex items-center justify-between">
                         <a
-                          href={item.liveLink}
+                          href={item?.liveDemo}
                           target="_blank"
                           className="md:text-[1.3vw] sm:text-[2.3vw] xs:text-[4.3vw] hover:text-theme-purple"
                         >
                           Live Demo
                         </a>
                         <a
-                          href={item.repoLink}
+                          href={item?.repoLink}
                           target="_blank"
                           className="md:text-[1.3vw] sm:text-[2.3vw] xs:text-[4.3vw] hover:text-theme-purple"
                         >
@@ -153,7 +158,7 @@ const FeaturedRepos = () => {
                     </div>
                   </div>
                 </motion.div>
-              </Link>
+              </div>
             </>
           )
         })}
