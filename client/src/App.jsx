@@ -18,7 +18,6 @@ const App = () => {
       <ScrollToTop />
       <AppInitializer>
         <MetaUpdater />
-        <RouteLogger />
         <Routes>
           {/* 🌍 Public (non-admin) routes */}
           {allRoutes.map(({ path, element }, idx) => (
