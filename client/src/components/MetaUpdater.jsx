@@ -9,7 +9,7 @@ const MetaUpdater = () => {
   useEffect(() => {
     if (isLoading || !site_info || !seo_pages) return
 
-    // normalize pathname (handle trailing slash)
+    // Normalize pathname
     const currentPath = location.pathname.replace(/\/+$/, '') || '/'
     const currentSEO = seo_pages.find(page => page.pageSlug === currentPath)
 
@@ -23,35 +23,30 @@ const MetaUpdater = () => {
     // --- Document Title ---
     document.title = metaTitle
 
-    // --- Description ---
+    // --- Meta Tags ---
     updateMetaTag('name', 'description', metaDescription)
     updateMetaTag('name', 'keywords', metaKeywords)
-
-    // --- Open Graph ---
     updateMetaTag('property', 'og:title', metaTitle)
     updateMetaTag('property', 'og:description', metaDescription)
     updateMetaTag('property', 'og:image', ogImage)
     updateMetaTag('property', 'og:url', canonical)
     updateMetaTag('property', 'og:type', 'website')
-
-    // --- Twitter ---
     updateMetaTag('name', 'twitter:title', metaTitle)
     updateMetaTag('name', 'twitter:description', metaDescription)
     updateMetaTag('name', 'twitter:image', ogImage)
 
-    // --- Favicon ---
+    // --- Favicon & Canonical ---
     updateFavicon(site_info.favicon?.url)
-
-    // --- Canonical ---
     updateLinkTag('canonical', canonical)
 
-    // --- Google Analytics (optional) ---
+    // --- Google Analytics ---
+
     if (site_info.googleAnalytics) {
       injectGoogleAnalytics(site_info.googleAnalytics)
     }
   }, [site_info, seo_pages, location.pathname, isLoading])
 
-  // helpers
+  // --- Helper Functions ---
   const updateMetaTag = (attr, name, content) => {
     if (!content) return
     let tag = document.querySelector(`meta[${attr}="${name}"]`)
@@ -87,22 +82,43 @@ const MetaUpdater = () => {
 
   const injectGoogleAnalytics = code => {
     if (!code) return
-    // Prevent duplicate GA tags
-    if (document.getElementById('google-analytics-script')) return
+    if (document.getElementById('google-analytics-script')) return // prevent duplicates
 
-    // simple check: only inject if it looks like valid GA code
-    const isGAValid =
-      code.includes('gtag(') || code.includes('analytics.js') || code.includes('function gtag')
-    if (!isGAValid) {
-      console.warn('⚠️ Skipping invalid Google Analytics code:', code)
-      return
+    // --- Extract Measurement ID if code is only ID ---
+    let measurementId = null
+    const idMatch = code.match(/G-[A-Z0-9]+/)
+    if (idMatch) measurementId = idMatch[0]
+
+    if (measurementId) {
+      // Create GA script dynamically
+      const script = document.createElement('script')
+      script.async = true
+      script.src = `https://www.googletagmanager.com/gtag/js?id=${measurementId}`
+      document.head.appendChild(script)
+
+      script.onload = () => {
+        window.dataLayer = window.dataLayer || []
+        function gtag() {
+          window.dataLayer.push(arguments)
+        }
+        window.gtag = gtag
+        gtag('js', new Date())
+        gtag('config', measurementId)
+        console.log('✅ Google Analytics initialized:', measurementId)
+      }
+    } else {
+      // fallback: inject full script as innerHTML (if it contains <script> tags)
+      const temp = document.createElement('div')
+      temp.innerHTML = code
+      const scripts = temp.querySelectorAll('script')
+      scripts.forEach(s => {
+        const newScript = document.createElement('script')
+        if (s.src) newScript.src = s.src
+        else newScript.innerHTML = s.innerHTML
+        newScript.async = true
+        document.head.appendChild(newScript)
+      })
     }
-
-    const script = document.createElement('script')
-    script.id = 'google-analytics-script'
-    script.type = 'text/javascript'
-    script.innerHTML = code
-    document.head.appendChild(script)
   }
 
   return null
