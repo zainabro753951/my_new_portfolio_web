@@ -3,7 +3,6 @@ import { useSelector } from 'react-redux'
 
 const Footer = () => {
   const { site_info } = useSelector(state => state.siteSettings)
-  console.log(site_info)
 
   return (
     <footer className="w-full flex items-center justify-center md:py-[3vw] sm:py-[4vw] xs:py-[5vw] border-t border-theme-cyan/30">

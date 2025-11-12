@@ -72,9 +72,9 @@ const CMTable = () => {
       {/* ✅ Scrollable Wrapper for Mobile */}
       <div className="overflow-x-auto custom-scrollbar ">
         <div className="space-y-4">
-          <div className="md:min-w-[100vw] sm:min-w-[150vw] xs:min-w-[250vw]">
+          <div className="md:min-w-[200vw] sm:min-w-[350vw] xs:min-w-[550vw]">
             {/* Header */}
-            <div className="w-full grid grid-cols-9 md:gap-[2vw] sm:gap-[4vw] xs:gap-[6vw] items-center md:text-[1vw] sm:text-[2vw] xs:text-[3.5vw] font-semibold text-cyan-300 border-b border-cyan-400/30 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 backdrop-blur-lg">
+            <div className="w-full grid grid-cols-16 md:gap-[2vw] sm:gap-[4vw] xs:gap-[6vw] items-center md:text-[1vw] sm:text-[2vw] xs:text-[3.5vw] font-semibold text-cyan-300 border-b border-cyan-400/30 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 backdrop-blur-lg">
               <div className="md:py-[1.5vw] sm:py-[2.5vw] xs:py-[3.5vw] text-center tracking-wide uppercase">
                 <input
                   ref={masterRef}
@@ -89,6 +89,13 @@ const CMTable = () => {
                 'Sender',
                 'Subject',
                 'Email',
+                'City',
+                'Country',
+                'ISP',
+                'Latitude',
+                'Longitude',
+                'IP Address',
+                'Region',
                 'Date',
                 'Status',
                 'Action',
@@ -114,7 +121,7 @@ const CMTable = () => {
                   return (
                     <div
                       key={item.id}
-                      className="grid grid-cols-9 md:gap-[2vw] sm:gap-[4vw] xs:gap-[6vw] items-center text-cyan-100 md:text-[0.95vw] sm:text-[1.9vw] xs:text-[3.5vw]
+                      className="grid grid-cols-16 md:gap-[2vw] sm:gap-[4vw] xs:gap-[6vw] items-center text-cyan-100 md:text-[0.95vw] sm:text-[1.9vw] xs:text-[3.5vw]
                   hover:bg-gradient-to-r hover:from-cyan-500/10 hover:to-blue-500/10
                   transition-all duration-300 ease-in-out break-words"
                     >
@@ -145,6 +152,34 @@ const CMTable = () => {
 
                       <div className="md:py-[1.5vw] sm:py-[2.5vw] xs:py-[3.5vw] text-center font-medium">
                         {item.email}
+                      </div>
+
+                      <div className="md:py-[1.5vw] sm:py-[2.5vw] xs:py-[3.5vw] text-center font-medium">
+                        {item?.city || 'Not Provided'}
+                      </div>
+
+                      <div className="md:py-[1.5vw] sm:py-[2.5vw] xs:py-[3.5vw] text-center font-medium">
+                        {item?.country || 'Not Provided'}
+                      </div>
+
+                      <div className="md:py-[1.5vw] sm:py-[2.5vw] xs:py-[3.5vw] text-center font-medium">
+                        {item?.isp || 'Not Provided'}
+                      </div>
+
+                      <div className="md:py-[1.5vw] sm:py-[2.5vw] xs:py-[3.5vw] text-center font-medium">
+                        {item?.latitude || 'Not Provided'}
+                      </div>
+
+                      <div className="md:py-[1.5vw] sm:py-[2.5vw] xs:py-[3.5vw] text-center font-medium">
+                        {item?.longitude || 'Not Provided'}
+                      </div>
+
+                      <div className="md:py-[1.5vw] sm:py-[2.5vw] xs:py-[3.5vw] text-center font-medium">
+                        {item?.ipAddress || 'Not Provided'}
+                      </div>
+
+                      <div className="md:py-[1.5vw] sm:py-[2.5vw] xs:py-[3.5vw] text-center font-medium">
+                        {item?.region || 'Not Provided'}
                       </div>
 
                       <div className="md:py-[1.5vw] sm:py-[2.5vw] xs:py-[3.5vw] text-center font-medium">

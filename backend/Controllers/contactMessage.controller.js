@@ -34,7 +34,6 @@ export const contactMessageValidation = [
 ]
 
 export const sendMessage = async (req, res) => {
-  // 1️⃣ Validate request
   const errors = validationResult(req)
   if (!errors.isEmpty()) {
     return res.status(400).json({
@@ -45,10 +44,10 @@ export const sendMessage = async (req, res) => {
   }
 
   try {
-    // 2️⃣ Extract fields
+    // Extract request data
     const { fullName, email, subject, message, planId } = req.body
 
-    // 3️⃣ Validate optional planId (only if provided)
+    // Validate planId if provided
     let resolvedPlanId = null
     if (planId) {
       const [rows] = await pool.query(`SELECT id FROM plans WHERE id = ?`, [planId])
@@ -62,24 +61,36 @@ export const sendMessage = async (req, res) => {
       resolvedPlanId = planId
     }
 
-    // 4️⃣ IP + User Agent
-    const rawIp = req.ip || req.headers['x-forwarded-for'] || null
+    // Get IP + User Agent
+    const rawIp = req.ip || req.headers['x-forwarded-for']?.split(',')[0] || null
     const user_agent = req.headers['user-agent'] || null
 
-    // 5️⃣ Hash IP
-    const hashedIp = await hashIp(rawIp)
+    // Hash IP for privacy
+    const hashedIp = rawIp ? await hashIp(rawIp) : null
 
-    // 6️⃣ Geo lookup
-    const { country, city } = getGeoLocation(rawIp)
+    // Geo lookup (example using some geo service)
+    // Assume getGeoLocation returns an object like:
+    // { country, region, city, latitude, longitude, isp }
+    const geo = rawIp ? getGeoLocation(rawIp) : {}
+    const {
+      country = null,
+      region = null,
+      city = null,
+      latitude = null,
+      longitude = null,
+      isp = null,
+    } = geo
 
-    console.log(`User raw IP: ${rawIp}`)
+    console.log(`User raw IP: ${rawIp}, Geo:`, geo)
 
-    // 7️⃣ Insert into contact_messages
+    // Insert into contact_messages
     const sql = `
       INSERT INTO contact_messages (
-        plan_id, full_name, email, subject, message, ip_address, user_agent
+        plan_id, full_name, email, subject, message,
+        ip_address, user_agent,
+        country, region, city, latitude, longitude, isp
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `
 
     const [result] = await pool.query(sql, [
@@ -90,11 +101,17 @@ export const sendMessage = async (req, res) => {
       message,
       hashedIp,
       user_agent,
+      country,
+      region,
+      city,
+      latitude,
+      longitude,
+      isp,
     ])
 
     const contactMessageId = result.insertId
 
-    // 8️⃣ Insert notification
+    // Insert notification
     const sqlNotification = `
       INSERT INTO notifications (type, title, message, reference_id)
       VALUES (?, ?, ?, ?)
@@ -111,17 +128,16 @@ export const sendMessage = async (req, res) => {
       contactMessageId,
     ])
 
-    // 9️⃣ Success response
+    // Success response
     return res.status(200).json({
       success: true,
       message: 'Message sent successfully!',
-      location: { country, city },
+      location: { country, region, city, latitude, longitude, isp },
       referenceId: contactMessageId,
       planId: resolvedPlanId,
     })
   } catch (error) {
     console.error('SEND_MESSAGE_ERROR:', error)
-
     return res.status(500).json({
       success: false,
       errorCode: 'SERVER_ERROR',
@@ -132,12 +148,37 @@ export const sendMessage = async (req, res) => {
 
 export const getMessage = async (req, res) => {
   try {
+    // 📄 Pagination + optional filters
     const page = parseInt(req.query.page) || 1
     const limit = parseInt(req.query.limit) || 10
     const offset = (page - 1) * limit
+    const search = req.query.search ? `%${req.query.search}%` : null
+    const status = req.query.status || null
 
+    // 🧠 Dynamic filters
+    let whereClause = 'WHERE 1=1'
+    const params = []
+
+    if (search) {
+      whereClause += `
+        AND (
+          full_name LIKE ? OR
+          email LIKE ? OR
+          subject LIKE ? OR
+          message LIKE ?
+        )`
+      params.push(search, search, search, search)
+    }
+
+    if (status) {
+      whereClause += ' AND status = ?'
+      params.push(status)
+    }
+
+    // 📦 Query to fetch messages with geo info
     const [messages] = await pool.query(
-      `SELECT
+      `
+      SELECT
         id,
         plan_id AS planId,
         full_name AS fullName,
@@ -147,24 +188,42 @@ export const getMessage = async (req, res) => {
         status,
         ip_address AS ipAddress,
         user_agent AS userAgent,
+        country,
+        region,
+        city,
+        latitude,
+        longitude,
+        isp,
         created_at AS createdAt,
         updated_at AS updatedAt
       FROM contact_messages
+      ${whereClause}
       ORDER BY created_at DESC
-      LIMIT ? OFFSET ?`,
-      [limit, offset]
+      LIMIT ? OFFSET ?
+      `,
+      [...params, limit, offset]
     )
 
-    const [[{ total }]] = await pool.query('SELECT COUNT(*) AS total FROM contact_messages')
+    // 🧮 Count total results (for pagination)
+    const [[{ total }]] = await pool.query(
+      `SELECT COUNT(*) AS total FROM contact_messages ${whereClause}`,
+      params
+    )
 
-    const messagesWithSelected = messages.map(msg => ({ ...msg, selected: false }))
+    // 🧱 Add "selected" flag for frontend
+    const messagesWithSelected = messages.map(msg => ({
+      ...msg,
+      selected: false,
+    }))
 
+    // ✅ Response
     return res.status(200).json({
       success: true,
       total,
       currentPage: page,
       totalPages: Math.ceil(total / limit),
       count: messages.length,
+      filters: { search: req.query.search || null, status },
       data: messagesWithSelected,
     })
   } catch (error) {

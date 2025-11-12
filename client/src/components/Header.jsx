@@ -7,7 +7,6 @@ import { useSelector } from 'react-redux'
 const Header = () => {
   const [isMobileOpen, setIsMobileOpen] = useState(false)
   const { site_info } = useSelector(state => state.siteSettings)
-  console.log(site_info)
 
   const toggleMenu = () => setIsMobileOpen(prev => !prev)
 
