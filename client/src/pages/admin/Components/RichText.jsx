@@ -113,15 +113,6 @@ export default function RichEditor({ output, setOutput }) {
     editorRef.current = editor
   }, [editor])
 
-  // Update editor content when `output` changes from backend
-  useEffect(() => {
-    if (editor && output !== editor.getHTML()) {
-      editor.commands.setContent(output, false) // `false` preserves history
-    } else {
-      editor.commands.setContent('<p>Start typing...</p>', false)
-    }
-  }, [output, editor])
-
   // -----------------------------------------------------------
   // ✅ Task list sync — consistent & efficient
   // -----------------------------------------------------------
@@ -150,6 +141,15 @@ export default function RichEditor({ output, setOutput }) {
 
     return () => mo.disconnect()
   }, [editor])
+
+  useEffect(() => {
+    if (!editor) return
+    // Only update if editor is empty (first load)
+    const html = output?.trim()
+    if (html && editor.getHTML() !== html) {
+      editor.commands.setContent(html, false) // false preserves undo history
+    }
+  }, [editor, output])
 
   if (!editor) return null
 
