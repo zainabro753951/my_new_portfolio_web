@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
-import { clearProject, projectFindById } from '../../../features/projectSlice'
+import { clearProject, projectFindById, projectFindBySlug } from '../../../features/projectSlice'
 import Header from '../../../components/Header'
 import ProjectHero from './ProjectHero'
 import ProjectContent from './ProjectContent'
@@ -10,7 +10,7 @@ import NextProject from '../../../components/NextProject'
 import Layout from '../../../components/Layout'
 
 const ProjectPage = () => {
-  const { projectSlug, id } = useParams()
+  const { projectSlug } = useParams()
   const { project, isLoading: projectLoading } = useSelector(state => state.projects)
   const [isLoading, setIsLoading] = useState(false)
   const [projectData, setProjectData] = useState({})
@@ -19,16 +19,16 @@ const ProjectPage = () => {
 
   // Load project when projectSlug or id changes
   useEffect(() => {
-    if (!projectSlug || !id) {
+    if (!projectSlug) {
       setIsLoading(false)
       dispatch(clearProject())
       return
     }
 
     setIsLoading(true)
-    dispatch(projectFindById(Number(id)))
+    dispatch(projectFindBySlug(projectSlug))
     setIsLoading(false)
-  }, [projectSlug, id, dispatch, projectLoading])
+  }, [projectSlug, dispatch, projectLoading])
 
   // Update local state when project changes
   useEffect(() => {

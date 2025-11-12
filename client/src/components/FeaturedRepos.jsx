@@ -111,7 +111,7 @@ const FeaturedRepos = () => {
                       whileHover={{ scale: 1.03 }}
                       transition={{ duration: 0.3, ease: 'easeOut' }}
                     >
-                      <Link to={`/projects/${item?.slug}/${item?.id}`} className="w-full h-full">
+                      <Link to={`/projects/${item?.slug}`} className="w-full h-full">
                         <img
                           src={item?.heroImage?.url || '/imgs/elementor-placeholder-image.png'}
                           className="w-full h-full object-cover"
@@ -121,7 +121,7 @@ const FeaturedRepos = () => {
                     </motion.div>
 
                     <Link
-                      to={`/projects/${item?.slug}/${item?.id}`}
+                      to={`/projects/${item?.slug}`}
                       className="md:text-[1.6vw] sm:text-[2.6vw] xs:text-[4.6vw] font-semibold font-fira-code hover:underline"
                     >
                       {item.title}

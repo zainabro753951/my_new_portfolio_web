@@ -25,7 +25,7 @@ const allRoutes = [
   },
   {
     element: <ProjectPage />,
-    path: '/projects/:projectSlug/:id',
+    path: '/projects/:projectSlug',
   },
   {
     element: <ReviewsPage />,

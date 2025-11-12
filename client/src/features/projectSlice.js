@@ -74,6 +74,12 @@ export const projectSlice = createSlice({
       state.project = found || null
     },
 
+    projectFindBySlug: (state, action) => {
+      const projectSlug = action.payload
+      const found = state.projects.find(p => p.slug.toLowerCase() === projectSlug.toLowerCase())
+      state.project = found || null
+    },
+
     // 🔹 Clear selected project
     clearProject: state => {
       state.project = null
@@ -81,5 +87,6 @@ export const projectSlice = createSlice({
   },
 })
 
-export const { addProjects, sortProjects, projectFindById, clearProject } = projectSlice.actions
+export const { addProjects, sortProjects, projectFindById, projectFindBySlug, clearProject } =
+  projectSlice.actions
 export default projectSlice.reducer
