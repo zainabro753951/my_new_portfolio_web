@@ -2,9 +2,12 @@ import React, { useState } from 'react'
 import { IoMdClose, IoMdMenu } from 'react-icons/io'
 import { AnimatePresence, motion } from 'motion/react'
 import Nav from './Nav'
+import { useSelector } from 'react-redux'
 
 const Header = () => {
   const [isMobileOpen, setIsMobileOpen] = useState(false)
+  const { site_info } = useSelector(state => state.siteSettings)
+  console.log(site_info)
 
   const toggleMenu = () => setIsMobileOpen(prev => !prev)
 
@@ -14,9 +17,13 @@ const Header = () => {
       <header className="w-full fixed top-0 z-50 bg-theme-dark text-white shadow-lg shadow-theme-purple/20">
         <div className="flex items-center justify-between font-inter md:px-[2.5vw] sm:px-[3vw] xs:px-[4.5vw] md:py-[1vw] sm:py-[1.5vw] xs:py-[2vw]">
           {/* Logo */}
-          <h1 className="gradient-text uppercase font-semibold md:text-[1.8vw] sm:text-[2.8vw] xs:text-[5.3vw]">
-            {'{ } Stack.dev'}
-          </h1>
+          {site_info?.logoImage ? (
+            <img src={site_info?.logoImage?.url} className="md:w-[15vw]" alt="" />
+          ) : (
+            <h1 className="gradient-text uppercase font-semibold md:text-[1.8vw] sm:text-[2.8vw] xs:text-[5.3vw]">
+              {'{ } Stack.dev'}
+            </h1>
+          )}
 
           {/* Desktop Nav */}
           <Nav />
