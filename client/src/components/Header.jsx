@@ -17,7 +17,11 @@ const Header = () => {
         <div className="flex items-center justify-between font-inter md:px-[2.5vw] sm:px-[3vw] xs:px-[4.5vw] md:py-[1vw] sm:py-[1.5vw] xs:py-[2vw]">
           {/* Logo */}
           {site_info?.logoImage ? (
-            <img src={site_info?.logoImage?.url} className="md:w-[15vw]" alt="" />
+            <img
+              src={site_info?.logoImage?.url}
+              className="md:w-[15vw] sm:w-[30vw] xs:w-[45vw]"
+              alt=""
+            />
           ) : (
             <h1 className="gradient-text uppercase font-semibold md:text-[1.8vw] sm:text-[2.8vw] xs:text-[5.3vw]">
               {'{ } Stack.dev'}
