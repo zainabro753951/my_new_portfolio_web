@@ -8,6 +8,7 @@ import ProtectedRoute from './context/ProtectedRoute'
 import Login from './pages/admin/Login'
 import AppInitializer from './components/AppInitializer'
 import RouteLogger from './components/RouteLogger'
+import MetaUpdater from './components/MetaUpdater'
 
 const App = () => {
   const { isAuth } = useSelector(state => state.adminAuth)
@@ -16,6 +17,7 @@ const App = () => {
     <>
       <ScrollToTop />
       <AppInitializer>
+        <MetaUpdater />
         <RouteLogger />
         <Routes>
           {/* 🌍 Public (non-admin) routes */}

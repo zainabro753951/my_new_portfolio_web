@@ -120,7 +120,7 @@ const Skills = () => {
       {...(location.pathname === '/'
         ? { whileInView: 'show', viewport: { once: true, amount: 0.3 } }
         : { animate: 'show' })}
-      className="w-full min-h-screen bg-theme-dark text-white font-inter md:py-[8vw] sm:py-[10vw] xs:py-[12vw] md:px-[3vw] sm:px-[5vw] xs:px-[6vw] overflow-hidden"
+      className="w-full min-h-screen bg-theme-dark text-white font-inter md:py-[10vw] sm:py-[15vw] xs:py-[20vw] md:px-[3vw] sm:px-[5vw] xs:px-[6vw] overflow-hidden"
     >
       <div className="grid md:grid-cols-2 items-center md:gap-[5vw] sm:gap-[6vw] xs:gap-[8vw]">
         {/* 🧠 Left Section */}

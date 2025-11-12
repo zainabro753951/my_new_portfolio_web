@@ -78,9 +78,7 @@ const PricingPlan = () => {
               className="md:mt-[1.5vw] sm:mt-[2.5vw] xs:mt-[3.5vw] grid md:grid-cols-3 sm:grid-cols-2 xs:grid-cols-1 md:gap-[1.5vw] sm:gap-[2.5vw] xs:gap-[3.5vw]"
             >
               {plans?.map((item, idx) => (
-                <>
-                  <Plan key={idx} item={item} />
-                </>
+                <Plan key={idx} item={item} />
               ))}
             </motion.div>
           </motion.div>

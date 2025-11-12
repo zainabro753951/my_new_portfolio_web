@@ -6,8 +6,6 @@ import { RiSeoLine, RiShoppingCart2Line } from 'react-icons/ri'
 // ✅ Function to select icon based on title
 export const useGetServiceIcon = (title = '') => {
   const text = title.toLowerCase()
-  console.log(text)
-
   if (text.includes('web')) return <FaCode />
   if (text.includes('backend')) return <FaDatabase />
   if (text.includes('auth') || text.includes('security')) return <FaUserLock />

@@ -71,7 +71,7 @@ const ProjectHero = ({ isLoading, projectData }) => {
   console.log(selectedImage)
 
   return (
-    <div className="w-full bg-theme-dark text-white relative bg-circut overflow-hidden font-inter will-change-transform ">
+    <div className="w-full bg-theme-dark text-white relative bg-circut overflow-hidden font-inter will-change-transform md:py-[10vw] sm:py-[15vw] xs:py-[20vw] md:px-[3vw] sm:px-[5vw] xs:px-[6vw]">
       {/* ✅ Background simplified & GPU accelerated */}
       <div className="absolute inset-0 overflow-hidden bg-theme-dark/70 will-change-transform">
         <motion.div
@@ -88,8 +88,8 @@ const ProjectHero = ({ isLoading, projectData }) => {
         />
       </div>
       {/* Main Content */}
-      <div className="w-full h-full relative grid md:grid-cols-2 md:gap-[5vw] sm:gap-[7vw] xs:gap-[9vw] place-content-center md:px-[2vw] sm:px-[2.5vw] xs:px-[3vw] items-center">
-        <div className="flex flex-col  md:gap-[1.5vw] sm:gap-[2.5vw] xs:gap-[3.5vw] md:py-[6vw] sm:py-[7vw] xs:py-[9vw]">
+      <div className="w-full h-full relative grid md:grid-cols-2 md:gap-[5vw] sm:gap-[7vw] xs:gap-[9vw] place-content-center  items-center">
+        <div className="flex flex-col md:gap-[1.5vw] sm:gap-[2.5vw] xs:gap-[3.5vw]">
           <motion.h1
             variants={animations.fadeUp}
             className="md:text-[3.5vw] sm:text-[4.5vw] xs:text-[6.5vw] font-semibold font-fira-code md:leading-[4.5vw] sm:leading-[5.5vw] xs:leading-[8vw]"

@@ -14,38 +14,6 @@ import LoadingSkeletonTestimonials from './LoadingSkeletonTestimonial'
 
 const Testimonial = () => {
   const { testimonials, isLoading } = useSelector(state => state.testimonial)
-  const reviews = [
-    {
-      img: 'https://hips.hearstapps.com/hmg-prod/images/gettyimages-71643263-copy.jpg?crop=1xw:1.0xh;center,top&resize=640:*',
-      clientName: 'Sophia Turner',
-      designation: 'Project Manager at InnovateX',
-      message:
-        'Alex turned our vision into a smooth, responsive web app. His attention to detail and clean design impressed our entire team.',
-    },
-    {
-      img: 'https://images.unsplash.com/photo-1544723795-3fb6469f5b39?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-      clientName: 'David Johnson',
-      designation: 'CEO of BrightWorks',
-      message:
-        'The dashboard Alex built was both powerful and intuitive. It simplified complex data into something our users love to explore.',
-    },
-    {
-      img: 'https://images.unsplash.com/photo-1607746882042-944635dfe10e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-      clientName: 'Emily Carter',
-      designation: 'Marketing Head at FlowWave',
-      message:
-        'Our website’s new animations and transitions feel premium. Alex’s GSAP integration made everything look seamless and professional.',
-    },
-    {
-      img: 'https://images.unsplash.com/photo-1595152772835-219674b2a8a6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-      clientName: 'James Walker',
-      designation: 'CTO of NexaSoft',
-      message:
-        'Alex’s React expertise made a huge difference in our project. The performance optimization he implemented saved us time and cost.',
-    },
-  ]
-
-  console.log(testimonials)
 
   if (isLoading) return <LoadingSkeletonTestimonials />
 

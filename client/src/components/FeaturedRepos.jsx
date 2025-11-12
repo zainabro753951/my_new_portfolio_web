@@ -67,32 +67,6 @@ const FeaturedRepos = () => {
       return () => clearTimeout(timeout)
     }
   }, [isLoading, projects])
-  const repos = [
-    {
-      img: '/imgs/projects/project1.jpg',
-      title: 'Inventory System',
-      desc: 'A comprehensive real-time inventory tracking system built for a mid-sized logistics company, reducing manual errors by 85% and improving operational efficiency.',
-      techStack: 'JavaScript',
-      liveLink: 'http://mainassistant-1.onrender.com',
-      repoLink: 'https://github.com',
-    },
-    {
-      img: '/imgs/projects/project2.jpg',
-      title: 'Task Manager',
-      desc: 'A collaborative task management app with real-time updates and notifications, designed to streamline team workflows.',
-      techStack: 'TypeScript',
-      liveLink: 'http://mainassistant-1.onrender.com',
-      repoLink: 'https://github.com',
-    },
-    {
-      img: '/imgs/projects/project3.jpg',
-      title: 'Social Dashboard',
-      desc: 'A dashboard for tracking social media analytics and engagement, providing actionable insights for marketing teams.',
-      techStack: 'Python',
-      liveLink: 'http://mainassistant-1.onrender.com',
-      repoLink: 'https://github.com',
-    },
-  ]
 
   if (isLoading || !isPageReady) return <FeaturedReposSkeleton />
 
@@ -117,9 +91,7 @@ const FeaturedRepos = () => {
         className="md:my-[1.5vw] sm:my-[2.5vw] xs:my-[3.5vw] grid md:grid-cols-3 sm:grid-cols-2 xs:grid-cols-1 md:gap-[1.5vw] sm:gap-[2.5vw] xs:gap-[3.5vw] place-items-start"
       >
         {projects.map((item, idx) => {
-          console.log(item)
           const color = colorGuess(item.techStack[0]?.name)
-
           return (
             <>
               <Link key={idx} to={`/projects/${item?.slug}/${item?.id}`}>
