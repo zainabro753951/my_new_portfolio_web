@@ -30,8 +30,11 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 const isProduction = process.env.NODE_ENV === 'production'
 
-// ✅ Trust proxy needed for Render, Cloudflare, etc.
-app.set('trust proxy', true)
+/* ----------------------------------------
+   ✅ 0. Trust Proxy Configuration
+---------------------------------------- */
+// Only trust first proxy if behind reverse proxy (like Render, Cloudflare, Heroku)
+app.set('trust proxy', isProduction ? 1 : 0)
 
 /* ----------------------------------------
    🧠 1. Helmet (Security Headers)
@@ -49,12 +52,16 @@ app.disable('x-powered-by')
 ---------------------------------------- */
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  limit: 500, // max requests per IP
+  max: 500, // max requests per IP
   standardHeaders: true,
   legacyHeaders: false,
   message: {
     success: false,
     message: 'Too many requests, please try again after 15 minutes.',
+  },
+  keyGenerator: (req, res) => {
+    // Use req.ip to prevent anyone bypassing with X-Forwarded-For
+    return req.ip
   },
 })
 app.use(limiter)
@@ -67,11 +74,9 @@ app.use(compression())
 /* ----------------------------------------
    🧾 4. Morgan (HTTP Request Logger)
 ---------------------------------------- */
-// Logs will show method, URL, status, response time, etc.
 if (!isProduction) {
-  app.use(morgan('dev')) // colorful short format for development
+  app.use(morgan('dev'))
 } else {
-  // detailed logs for production (useful for monitoring)
   app.use(morgan(':method :url :status :res[content-length] - :response-time ms'))
 }
 
@@ -121,7 +126,6 @@ if (isProduction) {
   const clientBuildPath = path.join(__dirname, 'client', 'dist')
   app.use(express.static(clientBuildPath))
 
-  // SPA fallback route (Express 5 compatible)
   app.get(/.*/, (req, res) => {
     res.sendFile(path.join(clientBuildPath, 'index.html'))
   })

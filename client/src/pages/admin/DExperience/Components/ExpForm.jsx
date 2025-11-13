@@ -98,6 +98,7 @@ const ExpForm = () => {
   }, [id, experience, reset])
 
   const { mutate, isPending, isError, isSuccess, data, error } = useAddExperience()
+
   const onSubmit = data => {
     const formData = new FormData()
     formData.append('isUpdate', isUpdate)
@@ -240,7 +241,7 @@ const ExpForm = () => {
               className="md:w-[1vw] md:h-[1vw] sm:w-[2vw] sm:h-[2vw] xs:w-[3.5vw] xs:h-[3.5vw] accent-cyan-400"
             />
             <span id className="md:text-[1.1vw] sm:text-[2.1vw] xs:text-[4.1vw] text-gray-300">
-              Mark as Featured
+              Currently Working
             </span>
           </label>
         </div>
