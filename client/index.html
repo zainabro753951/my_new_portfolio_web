@@ -2,19 +2,25 @@
 <html lang="en" class="bg-theme-dark">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- Basic Meta Tags -->
+
+    <!-- ✅ Basic Meta -->
     <title>Zain Abro | Full Stack Developer & Web Designer</title>
     <meta
       name="description"
       content="Zain Abro is a full-stack developer and web designer specializing in modern web applications, React, Node.js, and creative solutions. Explore projects, skills, and contact Zain for collaboration."
     />
-
     <meta name="author" content="Zain Abro" />
     <meta name="robots" content="index, follow" />
 
-    <!-- Open Graph / Facebook -->
+    <!-- ✅ Favicon & App Icons -->
+    <link rel="icon" type="/imgs/logo.png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="/imgs/logo.png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/imgs/logo.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#0a0a0a" />
+
+    <!-- ✅ Open Graph / Facebook -->
     <meta property="og:title" content="Zain Abro | Full Stack Developer & Web Designer" />
     <meta
       property="og:description"
@@ -23,25 +29,35 @@
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://zaincodes.onrender.com/" />
     <meta property="og:site_name" content="Zain Abro Portfolio" />
+    <meta property="og:image" content="/imgs/ogImage.png" />
+    <meta property="og:image:alt" content="Zain Abro Portfolio Preview" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
 
-    <!-- Twitter Card -->
+    <!-- ✅ Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:creator" content="@ZainAbro" />
     <meta name="twitter:title" content="Zain Abro | Full Stack Developer & Web Designer" />
     <meta
       name="twitter:description"
       content="Explore Zain Abro's web development portfolio featuring React, Node.js projects, and creative solutions. Contact for collaboration."
     />
+    <meta
+      name="twitter:image"
+      content="https://zain-portfolio-code.s3.us-east-1.amazonaws.com/seo/zain-portfolio-og-image.jpg"
+    />
+    <meta name="twitter:image:alt" content="Zain Abro Portfolio Preview" />
 
-    <!-- Canonical URL -->
+    <!-- ✅ Canonical URL -->
     <link rel="canonical" href="https://zaincodes.onrender.com/" />
 
-    <!-- Structured Data (JSON-LD) for SEO -->
+    <!-- ✅ Structured Data (JSON-LD) -->
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
         "@type": "Person",
         "name": "Zain Abro",
-        "url": "https://zaincodes.onrender.com//",
+        "url": "https://zaincodes.onrender.com/",
         "sameAs": [
           "https://github.com/ZainAbro",
           "https://linkedin.com/in/ZainAbro",
@@ -54,15 +70,20 @@
       }
     </script>
 
-    <!-- Optional: Alternate language version -->
+    <!-- ✅ Language Alternates (for i18n readiness) -->
     <link rel="alternate" hreflang="en" href="https://zaincodes.onrender.com/" />
 
+    <!-- ✅ Preconnect & Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Oswald:wght@200..700&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&family=Inter:wght@100..900&family=JetBrains+Mono:wght@100..800&family=Oswald:wght@200..700&family=Roboto:wght@100..900&display=swap"
       rel="stylesheet"
     />
+
+    <!-- ✅ Performance Optimizations -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="theme-color" content="#0a0a0a" />
   </head>
   <body>
     <div id="root"></div>
