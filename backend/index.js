@@ -6,7 +6,7 @@ import path from 'path'
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
 import helmet from 'helmet'
-import rateLimit from 'express-rate-limit'
+import rateLimit, { ipKeyGenerator } from 'express-rate-limit'
 import compression from 'compression'
 import morgan from 'morgan'
 
@@ -50,20 +50,19 @@ app.disable('x-powered-by')
 /* ----------------------------------------
    🚦 2. Rate Limiter (Prevent DDoS / Brute Force)
 ---------------------------------------- */
+
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 500, // max requests per IP
+  max: 500,
   standardHeaders: true,
   legacyHeaders: false,
   message: {
     success: false,
     message: 'Too many requests, please try again after 15 minutes.',
   },
-  keyGenerator: (req, res) => {
-    // Use req.ip to prevent anyone bypassing with X-Forwarded-For
-    return req.ip
-  },
+  keyGenerator: (req, res) => ipKeyGenerator(req), // safe for IPv4 & IPv6
 })
+
 app.use(limiter)
 
 /* ----------------------------------------

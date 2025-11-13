@@ -47,6 +47,7 @@ export const addExp = async (req, res) => {
     // ✅ Normalize working status and dates
     const isCurrentlyWorking = currentlyWorking === 'true'
     const normalizedEndDate = isCurrentlyWorking ? null : endDate
+    isUpdate = isUpdate === 'true'
 
     // 🖼️ Upload company logo (if file provided)
     if (req.file) {
