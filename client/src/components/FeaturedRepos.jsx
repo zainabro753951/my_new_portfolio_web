@@ -169,7 +169,7 @@ const FeaturedRepos = () => {
         variants={buttonVariants}
         className="w-full flex items-center justify-center md:mt-[2.5vw] sm:mt-[3.5vw] xs:mt-[4.5vw] md:text-[1.3vw] sm:text-[2.3vw] xs:text-[4.3vw]"
       >
-        <GardientButton text="See All Projects" />
+        <GardientButton text="See All Projects" link="/projects" />
       </motion.div>
     </motion.div>
   )

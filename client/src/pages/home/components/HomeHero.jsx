@@ -87,8 +87,13 @@ const HomeHero = () => {
                 variants={animations.fadeUp}
                 className="grid md:grid-cols-2 items-center md:w-[70%] md:gap-[2vw] sm:gap-[2.5vw] xs:gap-[3vw] md:text-[1.3vw] sm:text-[2.3vw] xs:text-[4.3vw] font-inter"
               >
-                <GardientButton text="View Projects" hoverOpacity={false} hoverShadow={true} />
-                <BorderedButton text="Get In Touch" />
+                <GardientButton
+                  text="View Projects"
+                  hoverOpacity={false}
+                  hoverShadow={true}
+                  link="/projects"
+                />
+                <BorderedButton text="Get In Touch" link={'/contact'} />
               </motion.div>
             </motion.div>
 
