@@ -2,6 +2,7 @@ import React, { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { checkAuth } from '../Queries/SecureRoute'
 import { loginAdmin, logoutAdmin } from '../features/authSlice'
+import ThemeReloader from '../components/ThemeReloader'
 
 const AuthLoader = ({ children }) => {
   const dispatch = useDispatch()
@@ -18,12 +19,8 @@ const AuthLoader = ({ children }) => {
   }, [isError, isSuccess, data, dispatch])
 
   // 🚫 Don't render routes until verification is done
-  if (isVerifying) {
-    return (
-      <div className="w-full h-screen flex items-center justify-center bg-black text-white">
-        <h1 className="text-xl font-semibold animate-pulse">Verifying session...</h1>
-      </div>
-    )
+  if (!isVerifying) {
+    return <ThemeReloader />
   }
 
   return children

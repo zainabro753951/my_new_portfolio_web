@@ -9,13 +9,35 @@
   --font-inter: 'Inter', sans-serif;
   --breakpoint-xs: 300px;
 }
-
-.gradient-text {
+#0AE5FF .gradient-text {
   background: linear-gradient(to right, #9235ea, #5161cf, #06b6d4); /* Gradient colors */
   -webkit-background-clip: text; /* Safari, Chrome */
   -webkit-text-fill-color: transparent; /* Safari, Chrome */
   background-clip: text; /* Firefox */
   color: transparent;
+}
+
+.reloader-text {
+  font-weight: 700;
+  background: linear-gradient(90deg, #0ae5ff, #0a1dff, #0ae5ff);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+  animation: gradientMove 3s linear infinite;
+}
+
+@keyframes gradientMove {
+  0% {
+    background-position: 0% center;
+  }
+  50% {
+    background-position: 100% center;
+  }
+  100% {
+    background-position: 0% center;
+  }
 }
 
 .gradient-button {
