@@ -19,7 +19,7 @@ const AuthLoader = ({ children }) => {
   }, [isError, isSuccess, data, dispatch])
 
   // 🚫 Don't render routes until verification is done
-  if (isVerifying) {
+  if (!isVerifying) {
     return <ThemeReloader />
   }
 
