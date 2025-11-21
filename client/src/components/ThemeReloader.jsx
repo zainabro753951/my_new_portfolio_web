@@ -24,10 +24,14 @@ const ThemeReloader = () => {
   return (
     <div className="w-full h-screen bg-black flex flex-col items-center justify-center">
       {/* GIF Loader */}
-      <img className="w-[45%] object-cover object-center" src="/imgs/reloader.gif" alt="" />
+      <img
+        className="md:w-[45%] xs:w-[80%] object-cover object-center"
+        src="/imgs/reloader.gif"
+        alt=""
+      />
 
       {/* Animated Text */}
-      <div className="relative -top-24 h-[4vw] flex items-center">
+      <div className="relative md:-top-24 sm:top-16 xs:-top-7 h-[4vw] flex items-center">
         <AnimatePresence mode="wait">
           <motion.h1
             key={index}
