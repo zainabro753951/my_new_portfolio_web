@@ -9,7 +9,7 @@
   --font-inter: 'Inter', sans-serif;
   --breakpoint-xs: 300px;
 }
-#0AE5FF .gradient-text {
+.gradient-text {
   background: linear-gradient(to right, #9235ea, #5161cf, #06b6d4); /* Gradient colors */
   -webkit-background-clip: text; /* Safari, Chrome */
   -webkit-text-fill-color: transparent; /* Safari, Chrome */
