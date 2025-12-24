@@ -1,4 +1,5 @@
 import readline from 'readline'
+import axios from 'axios'
 import dotenv from 'dotenv'
 dotenv.config()
 
@@ -76,7 +77,9 @@ async function createAdmin() {
     password,
   })
 
-  console.log(response)
+  if (response.status === 400 || response.status === 500) {
+    return console.log('Something went wrong please try again later!')
+  }
 
   // Summary Output
   console.log(colors.green('\n==============================================='))

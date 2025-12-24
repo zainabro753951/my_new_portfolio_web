@@ -2,6 +2,7 @@ import { createSlice } from '@reduxjs/toolkit'
 
 const initialState = {
   isLoading: false,
+  activeUsersCount: 0,
   site_info: {},
   seo_pages: [],
   seo_page: {},
@@ -56,6 +57,10 @@ const siteSettingsSlice = createSlice({
       state.seo_page = {}
     },
 
+    setActiveUsersCount: (state, action) =>{
+      state.activeUsersCount = action.payload.count
+    },
+
     // ✅ Reset on logout or refresh
     resetSiteSettings: () => initialState,
   },
@@ -69,6 +74,7 @@ export const {
   resetSiteSettings,
   clearSeoPage,
   findSeoPageBySlug,
+  setActiveUsersCount
 } = siteSettingsSlice.actions
 
 export default siteSettingsSlice.reducer

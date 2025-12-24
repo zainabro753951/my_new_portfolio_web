@@ -11,13 +11,15 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { queryClient } from './queryClient.js'
 import DeleteEntry from './context/DeleteEntry.jsx'
 import { HelmetProvider } from 'react-helmet-async'
+import SocketProvider from './socket/SocketProvider.jsx'
 
 const isDev = import.meta.env.VITE_REACT_ENV === 'development'
 createRoot(document.getElementById('root')).render(
   <BrowserRouter>
     <Provider store={store}>
       <QueryClientProvider client={queryClient}>
-        <DeleteEntry>
+        <SocketProvider>
+          <DeleteEntry>
           <CursorHoverProvider>
             <AuthLoader>
               <HelmetProvider>
@@ -26,6 +28,7 @@ createRoot(document.getElementById('root')).render(
             </AuthLoader>
           </CursorHoverProvider>
         </DeleteEntry>
+        </SocketProvider>
         {isDev && <ReactQueryDevtools initialIsOpen={false} />}
       </QueryClientProvider>
     </Provider>

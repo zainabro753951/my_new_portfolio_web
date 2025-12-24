@@ -11,8 +11,14 @@ import {
 } from 'react-icons/fa'
 import RecentActivity from './RecentActivity'
 import UserMessages from './UserMessages'
+import { useSelector } from 'react-redux'
 
 const DHomeCards = () => {
+  const { projectCounts, isLoading } = useSelector(state => state.projects)
+  const { educations } = useSelector(state => state.education)
+  const { skills } = useSelector(state => state.skills)
+  const { activeUsersCount } = useSelector(state => state.siteSettings)
+
   // -------------------------
   // Sample Data
   // -------------------------
@@ -20,8 +26,8 @@ const DHomeCards = () => {
     {
       icon: <FaTasks />,
       title: 'Total Projects',
-      quantity: '18',
-      caption: '9 Published • 9 Drafts',
+      quantity: projectCounts?.allProjects,
+      caption: `${projectCounts?.publishedProjects} Published • ${projectCounts?.draftProjects} Drafts`,
     },
     {
       icon: <FaChartLine />,
@@ -35,13 +41,18 @@ const DHomeCards = () => {
       quantity: '128',
       caption: 'Storage used: 860MB',
     },
-    { icon: <FaGraduationCap />, title: 'Education', quantity: '5', caption: 'Courses & Degrees' },
-    { icon: <FaTools />, title: 'Skills', quantity: '12', caption: 'Top skills listed' },
+    {
+      icon: <FaGraduationCap />,
+      title: 'Education',
+      quantity: educations.length,
+      caption: 'Courses & Degrees',
+    },
+    { icon: <FaTools />, title: 'Skills', quantity: skills.length, caption: 'Top skills listed' },
     {
       icon: <FaUser />,
       title: 'Active Users',
-      quantity: '1.2k',
-      caption: 'Currently online: 85',
+      quantity: activeUsersCount,
+      caption: `Currently online: ${activeUsersCount}`,
     },
   ]
 

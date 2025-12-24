@@ -1,5 +1,5 @@
-import { configDotenv } from 'dotenv'
-configDotenv()
+import dotenv from 'dotenv'
+dotenv.config()
 import express from 'express'
 import { fileURLToPath } from 'url'
 import path from 'path'
@@ -25,7 +25,6 @@ import serviceRoute from './Routes/services.route.js'
 import faqsRoute from './Routes/faqs.route.js'
 
 const app = express()
-const PORT = process.env.PORT || 2500
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 const isProduction = process.env.NODE_ENV === 'production'
@@ -146,8 +145,6 @@ app.use((err, req, res, next) => {
 })
 
 /* ----------------------------------------
-   🚀 9. Server Start
+   🚀 9. Server Export for socket.io
 ---------------------------------------- */
-app.listen(PORT, () => {
-  console.log(`✅ Server running securely on port ${PORT}`)
-})
+export default app
