@@ -286,7 +286,9 @@ const DAddProjectPage = () => {
   }
 
   useEffect(() => {
-    if (isSuccess) glassToast(data?.message, 'success')
+    if (isSuccess) {
+      glassToast(data?.message, 'success')
+    }
     if (isError) {
       console.log(error)
       glassToast(error?.response?.data?.message, 'error')

@@ -14,8 +14,8 @@ export const mutateProject = () => {
   return useMutation({
     mutationFn: submitProjectRes,
     onSuccess: () => {
-      // Invalidate and refetch
       queryClient.invalidateQueries({ queryKey: ['projects'] })
+      queryClient.invalidateQueries({ queryKey: ['activities'] })
     },
   })
 }

@@ -12,6 +12,7 @@ export const useAddAbout = () => {
     mutationFn: addAboutFunc,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['about'] })
+      queryClient.invalidateQueries({ queryKey: ['activities'] })
     },
   })
 }

@@ -12,6 +12,7 @@ import notificationReducer from '../features/notificationSlice.js'
 import experienceReducer from '../features/experienceSlice.js'
 import serviceReducer from '../features/serviceSlice.js'
 import FAQReducer from '../features/FAQSlice.js'
+import activitiesReducer from "../features/recentActivitySlice.js"
 
 export const store = configureStore({
   reducer: {
@@ -28,5 +29,6 @@ export const store = configureStore({
     experience: experienceReducer,
     service: serviceReducer,
     FAQ: FAQReducer,
+    activities: activitiesReducer
   },
 })

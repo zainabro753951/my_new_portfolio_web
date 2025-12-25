@@ -2,6 +2,7 @@ import { body, validationResult } from 'express-validator'
 import pool from '../db.config.js'
 import { uploadToS3, deleteFromS3 } from '../Utils/UploadToS3.js'
 import { safeParse } from '../Utils/SafeParser.js'
+import { logActivity } from '../Utils/activityLogger.js'
 
 export const AddProjectValidation = [
   body('title').notEmpty().withMessage('Project title is required'),
@@ -202,6 +203,15 @@ export const addOrUpdateProject = async (req, res) => {
 
       await pool.query(query, values)
 
+      // 🟡 Activity log — PROJECT UPDATE
+await logActivity({
+  type: 'PROJECT_UPDATE',
+  title: 'Project details updated!',
+  description: `Project "${title}" information was updated.`,
+  ip: req.ip,
+  device: req.headers['user-agent'],
+})
+
       return res.status(200).json({
         success: true,
         message: '✅ Project updated successfully!',
@@ -238,6 +248,15 @@ export const addOrUpdateProject = async (req, res) => {
       ]
 
       await pool.query(query, values)
+
+      // 🟢 Activity log — PROJECT ADD
+await logActivity({
+  type: 'PROJECT_ADD',
+  title: 'New project added to portfolio',
+  description: `Project "${title}" was added successfully.`,
+  ip: req.ip,
+  device: req.headers['user-agent'],
+})
 
       return res.status(201).json({
         success: true,

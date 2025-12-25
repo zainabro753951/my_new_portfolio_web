@@ -3,6 +3,7 @@ import { body } from 'express-validator'
 
 import { deleteFromS3, uploadToS3 } from '../Utils/UploadToS3.js'
 import { safeParse } from '../Utils/SafeParser.js'
+import { logActivity } from '../Utils/activityLogger.js'
 
 export const AddAboutValidator = [
   body('fullName').trim().notEmpty().withMessage('Full name is required'),
@@ -85,6 +86,15 @@ export const AddAbout = async (req, res) => {
       )
 
       if (updateResult.affectedRows > 0) {
+        // 🟡 Activity log — ABOUT UPDATE
+        await logActivity({
+          type: 'ABOUT_UPDATE',
+          title: 'About info updated',
+          description: 'You’ve just updated the About section of your portfolio.',
+          ip: req.ip,
+          device: req.headers['user-agent'],
+        })
+
         return res.status(200).json({
           success: true,
           successCode: 'ABOUT_UPDATED',
@@ -99,6 +109,14 @@ export const AddAbout = async (req, res) => {
       )
 
       if (results.affectedRows > 0) {
+        await logActivity({
+          type: 'ABOUT_ADD',
+          title: 'About info added',
+          description: 'Your About section is now live on the portfolio.',
+          ip: req.ip,
+          device: req.headers['user-agent'],
+        })
+
         return res.status(201).json({
           success: true,
           successCode: 'ABOUT_CREATED',
