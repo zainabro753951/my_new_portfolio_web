@@ -2,10 +2,8 @@ import React from 'react'
 import { motion } from 'motion/react'
 import { useSelector } from 'react-redux'
 import { RecentActivitySkeleton } from './RecentActivitySkeleton'
-import dayjs from 'dayjs'
-import relativeTime from 'dayjs/plugin/relativeTime'
 
-dayjs.extend(relativeTime)
+import { TimeAgo } from '../../../../components/TimeAgo'
 
 const container = {
   hidden: { opacity: 0, y: 1.5 },
@@ -138,7 +136,7 @@ const RecentActivity = () => {
                     {act.activity_title}
                   </h4>
                   <time className="text-gray-400 text-[0.8vw] md:text-[0.7vw]">
-                    {dayjs(act.created_at).fromNow()}
+                    {<TimeAgo time={act.created_at} />}
                   </time>
                 </div>
                 <p className="text-gray-300 text-[0.9vw] md:text-[0.8vw] mt-[0.5vw] truncate">

@@ -14,6 +14,7 @@ import Layout from '../../components/Layout'
 import { useDispatch, useSelector } from 'react-redux'
 import { clearSeoPage, findSeoPageBySlug } from '../../features/siteSettingsSlice'
 import { useLocation } from 'react-router-dom'
+import PageTracker from '../../components/PageTracker'
 
 const HomePage = () => {
   const location = useLocation()
@@ -41,6 +42,7 @@ const HomePage = () => {
         metaRobots={seo_page?.metaRobots}
         twitterCard={seo_page?.twitterCardType}
       >
+        <PageTracker />
         <CustomCursor />
         <HomeHero />
         <About />

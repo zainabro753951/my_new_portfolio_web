@@ -9,6 +9,7 @@ import { useLocation } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { useEffect } from 'react'
 import { clearSeoPage, findSeoPageBySlug } from '../../features/siteSettingsSlice'
+import PageTracker from '../../components/PageTracker'
 
 const ProjectsPage = () => {
   const location = useLocation()
@@ -35,6 +36,7 @@ const ProjectsPage = () => {
         metaRobots={seo_page?.metaRobots}
         twitterCard={seo_page?.twitterCardType}
       >
+        <PageTracker />
         <CustomCursor />
         <HeroSection
           title="Featured"

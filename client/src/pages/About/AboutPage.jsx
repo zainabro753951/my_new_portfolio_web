@@ -8,6 +8,7 @@ import Layout from '../../components/Layout'
 import { useLocation } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { clearSeoPage, findSeoPageBySlug } from '../../features/siteSettingsSlice'
+import PageTracker from '../../components/PageTracker'
 
 const AboutPage = () => {
   const location = useLocation()
@@ -34,6 +35,7 @@ const AboutPage = () => {
         metaRobots={seo_page?.metaRobots}
         twitterCard={seo_page?.twitterCardType}
       >
+        <PageTracker />
         <CustomCursor />
         <Skills />
         <Experience />

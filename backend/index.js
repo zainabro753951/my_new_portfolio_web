@@ -23,7 +23,8 @@ import contactMsgRoute from './Routes/contactMsg.route.js'
 import expRoute from './Routes/experience.route.js'
 import serviceRoute from './Routes/services.route.js'
 import faqsRoute from './Routes/faqs.route.js'
-import activities from "./Routes/recentActivities.route.js"
+import activities from './Routes/recentActivities.route.js'
+import visitors from './Routes/visitors.route.js'
 
 const app = express()
 const __filename = fileURLToPath(import.meta.url)
@@ -118,6 +119,7 @@ app.use(expRoute)
 app.use(serviceRoute)
 app.use(faqsRoute)
 app.use(activities)
+app.use(visitors)
 
 /* ----------------------------------------
    🩵 8. 404 + Error Handling
