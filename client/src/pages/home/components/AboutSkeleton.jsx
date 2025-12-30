@@ -1,5 +1,5 @@
-import React from 'react'
 import { motion } from 'motion/react'
+import { SkeletonBlock } from '../../admin/DHome/components/SkeletonBlock'
 
 const AboutSkeleton = () => {
   return (
@@ -7,27 +7,28 @@ const AboutSkeleton = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.6 }}
-      className="md:py-[8vw] sm:py-[9vw] xs:py-[10vw] md:px-[2.5vw] sm:px-[3vw] xs:px-[3.5vw] bg-theme-dark w-full text-white font-inter overflow-hidden"
+      className="w-full bg-theme-dark text-white font-inter overflow-hidden
+        md:py-[8vw] sm:py-[9vw] xs:py-[10vw] md:px-[2.5vw] sm:px-[3vw] xs:px-[3.5vw]"
     >
       <div className="w-full h-full grid md:grid-cols-2 md:gap-[2.5vw] sm:gap-[3.5vw] xs:gap-[4.5vw] items-center">
         {/* 🦴 Experience Cards Skeleton */}
         <div className="grid md:grid-cols-2 md:gap-[2vw] sm:gap-[3vw] xs:gap-[4vw]">
           {[1, 2, 3, 4].map((_, idx) => (
-            <div
+            <motion.div
               key={idx}
-              className="md:p-[0.2vw] sm:p-[0.4vw] xs:p-[0.8vw] md:rounded-[0.8vw] sm:rounded-[1.3vw] xs:rounded-[1.8vw] gradient-button"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: idx * 0.08 }}
+              className="p-[1.25vw] rounded-[1.2vw]
+                bg-linear-to-br from-[#0b0b2a]/60 to-[#0f1040]/30
+                border border-white/10 backdrop-blur-[2vw] shadow-lg"
             >
-              <div className="w-full h-full md:p-[1.5vw] sm:p-[2vw] xs:p-[2.5vw] bg-theme-dark md:rounded-[0.8vw] sm:rounded-[1.3vw] xs:rounded-[1.8vw] flex flex-col gap-[0.8vw] animate-pulse">
-                {/* Icon skeleton */}
-                <div className="w-[4vw] h-[4vw] sm:w-[5vw] sm:h-[5vw] xs:w-[7.5vw] xs:h-[7.5vw] bg-gray-700 rounded-full mb-2"></div>
-
-                {/* Counter skeleton */}
-                <div className="w-[5vw] sm:w-[7vw] xs:w-[10vw] h-[2vw] sm:h-[3vw] xs:h-[4vw] bg-gray-700 rounded-md"></div>
-
-                {/* Subtitle skeleton */}
-                <div className="w-[70%] h-[1.3vw] sm:h-[2.3vw] xs:h-[3.8vw] bg-gray-700 rounded-md mt-1"></div>
+              <div className="flex flex-col gap-[0.8vw] w-full h-full">
+                <SkeletonBlock className="w-[4vw] h-[4vw] rounded-full mb-[0.6vw]" />
+                <SkeletonBlock className="w-[5vw] h-[2vw] rounded-md" />
+                <SkeletonBlock className="w-[70%] h-[1.3vw] rounded-md" />
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
 
@@ -36,14 +37,11 @@ const AboutSkeleton = () => {
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="w-full h-full bg-theme-dark flex flex-col gap-[0.8vw] animate-pulse"
+          className="flex flex-col gap-[0.8vw]"
         >
-          <div className="w-[80%] h-[2vw] sm:h-[3vw] xs:h-[4.5vw] bg-gray-700 rounded-md"></div>
+          <SkeletonBlock className="w-[80%] h-[2vw] rounded-md" />
           {[...Array(6)].map((_, idx) => (
-            <div
-              key={idx}
-              className="w-full h-[1.2vw] sm:h-[2vw] xs:h-[3.5vw] bg-gray-700 rounded-md"
-            ></div>
+            <SkeletonBlock key={idx} className="w-full h-[1.2vw] rounded-md" />
           ))}
         </motion.div>
       </div>
